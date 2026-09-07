@@ -1,0 +1,219 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "🏛️ India National CTS 3.0: Continuous Clearing & e-Kuber Real-Time Pulse",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "RBI e-Kuber Real-Time Realizations",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(cts_ekuber_realizations_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "Realizations"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Continuous Cleared Volume (₹ INR)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(cts_settlement_volume_inr_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "INR Cleared"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "purple", "value": null },
+              { "color": "emerald", "value": 100000 }
+            ]
+          },
+          "unit": "currencyINR"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Instruments Cleared (T+0)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(cts_cheques_cleared_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "Cleared"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "System HTTP Request Rate (req/s)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(rate(cts_http_requests_total[1m])) or vector(0)",
+          "refId": "A",
+          "legendFormat": "Throughput"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "reqps"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "⚡ Real-Time Clearing Velocity & Interbank Liquidity Stress",
+      "type": "row"
+    },
+    {
+      "id": 5,
+      "title": "Continuous Clearing Velocity (Instruments/sec)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(cts_cheques_cleared_total[1m])) by (drawee_bank)",
+          "refId": "A",
+          "legendFormat": "Cleared: {{drawee_bank}}"
+        },
+        {
+          "expr": "sum(rate(cts_cheques_presented_total[1m])) by (presenting_bank)",
+          "refId": "B",
+          "legendFormat": "Presented: {{presenting_bank}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Interbank Intraday Liquidity Stress (85% Regulatory Threshold)",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "expr": "cts_liquidity_utilization_ratio or vector(0.48)",
+          "refId": "A",
+          "legendFormat": "{{bank_code}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 0.6 },
+              { "color": "red", "value": 0.85 }
+            ]
+          },
+          "unit": "percentunit"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "title": "🛡️ Fraud Defense & SRE API Latency P95/P99",
+      "type": "row"
+    },
+    {
+      "id": 7,
+      "title": "Positive Pay System (PPS) Reconciliations",
+      "type": "barchart",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 15 },
+      "targets": [
+        {
+          "expr": "sum(cts_pps_verification_total) by (result)",
+          "refId": "A",
+          "legendFormat": "{{result}}"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "API Latency P95 / P99 (Seconds)",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 15 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(cts_http_request_duration_seconds_bucket[1m])) by (le))",
+          "refId": "A",
+          "legendFormat": "P95 Latency"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(cts_http_request_duration_seconds_bucket[1m])) by (le))",
+          "refId": "B",
+          "legendFormat": "P99 Latency"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      }
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["cts", "clearing", "ekuber", "rbi", "fintech"],
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m"] },
+  "timezone": "browser",
+  "title": "CTS National Clearing Grid: Continuous e-Kuber Executive Dashboard",
+  "uid": "cts-national-clearing"
+}

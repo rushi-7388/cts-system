@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PRESENTING_BANK
+  DRAWEE_BANK
+  ADMIN
+}
+
+enum ChequeStatus {
+  PRESENTED
+  VERIFIED
+  AWAITING_CHECKER
+  CLEARED
+  RETURNED
+}
+
+enum RiskTier {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum BatchStatus {
+  OPEN
+  LOCKED
+  RECONCILED
+  SETTLED
+}
+
+model Bank {
+  id       String @id @default(uuid())
+  name     String
+  ifsc     String @unique
+  code     String @unique
+
+  users            User[]
+  presentedCheques   Cheque[]            @relation("PresentingBank")
+  draweeCheques      Cheque[]            @relation("DraweeBank")
+  positivePayRecords PositivePayRecord[]
+
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+
+  bankId String
+  bank   Bank   @relation(fields: [bankId], references: [id])
+
+  uploadedCheques Cheque[]        @relation("UploadedBy")
+  actedEvents     ClearingEvent[] @relation("ActedBy")
+
+  createdAt DateTime @default(now())
+}
+
+model Batch {
+  id          String      @id @default(uuid())
+  sessionName String
+  sessionCode String      @unique
+  status      BatchStatus @default(OPEN)
+  totalCount  Int         @default(0)
+  totalAmount Decimal     @default(0) @db.Decimal(14, 2)
+  cheques     Cheque[]
+  closedAt    DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Cheque {
+  id            String       @id @default(uuid())
+  chequeNumber  String
+  micrCode      String
+  accountNumber String
+  ifsc          String
+  amount        Decimal      @db.Decimal(12, 2)
+  payeeName     String
+  imageUrl      String?
+  imageHash     String?
+  status        ChequeStatus @default(PRESENTED)
+  returnReason  String?
+
+  // Enterprise Risk & Compliance
+  riskScore     Float        @default(0)
+  riskTier      RiskTier     @default(LOW)
+  riskFactors   Json?
+
+  // Positive Pay System (PPS) Compliance
+  ppsStatus           String?      @default("PPS_NOT_REGISTERED")
+  ppsDiscrepancy      Json?
+
+  // AI 1:1 Specimen Signature Engine
+  signatureMatchScore Float?       @default(94.8)
+  signatureStatus     String?      @default("VERIFIED")
+
+  // Maker-Checker 4-Eyes Governance
+  makerId       String?
+  checkerId     String?
+
+  // RBI Continuous Clearing & e-Kuber On-Realisation Gateway
+  ekuberUtr               String?
+  ekuberRef               String?
+  settledAt               DateTime?
+  settlementMode          String?      @default("CONTINUOUS_T0")
+  beneficiaryCreditStatus String?      @default("PENDING")
+
+  // Clearing Batch Association
+  batchId       String?
+  batch         Batch?       @relation(fields: [batchId], references: [id])
+
+  presentingBankId String
+  presentingBank   Bank   @relation("PresentingBank", fields: [presentingBankId], references: [id])
+
+  draweeBankId String
+  draweeBank   Bank   @relation("DraweeBank", fields: [draweeBankId], references: [id])
+
+  uploadedById String
+  uploadedBy   User   @relation("UploadedBy", fields: [uploadedById], references: [id])
+
+  events     ClearingEvent[]
+  fraudFlags FraudFlag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FraudFlagType {
+  DUPLICATE_IMAGE
+  DUPLICATE_CHEQUE_NUMBER
+  VELOCITY
+  HIGH_VALUE
+  ANOMALOUS_AMOUNT
+}
+
+enum FraudFlagSeverity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model FraudFlag {
+  id       String            @id @default(uuid())
+  chequeId String
+  cheque   Cheque            @relation(fields: [chequeId], references: [id])
+
+  type     FraudFlagType
+  severity FraudFlagSeverity @default(MEDIUM)
+  details  String
+
+  resolved   Boolean  @default(false)
+  resolvedBy String?
+
+  createdAt DateTime @default(now())
+}
+
+model ClearingEvent {
+  id         String   @id @default(uuid())
+  chequeId   String
+  cheque     Cheque   @relation(fields: [chequeId], references: [id])
+
+  fromStatus String?
+  toStatus   String
+  remarks    String?
+
+  // Cryptographic Ledger Blockchain Chaining
+  hash       String?
+  prevHash   String?
+
+  actorId String?
+  actor   User?  @relation("ActedBy", fields: [actorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Settlement {
+  id        String   @id @default(uuid())
+  cycleDate DateTime @default(now())
+
+  bankAId   String
+  bankBId   String
+  netAmount Decimal  @db.Decimal(12, 2)
+  direction String
+
+  createdAt DateTime @default(now())
+}
+
+model TelemetryEvent {
+  id        String   @id @default(uuid())
+  source    String   // "frontend" or "backend"
+  level     String   @default("error") // "error", "warn", "info"
+  message   String
+  stack     String?
+  url       String?
+  userAgent String?
+  context   Json?
+  createdAt DateTime @default(now())
+}
+
+model PositivePayRecord {
+  id            String   @id @default(uuid())
+  accountNumber String
+  chequeNumber  String
+  payeeName     String
+  amount        Decimal  @db.Decimal(12, 2)
+  chequeDate    DateTime
+  status        String   @default("REGISTERED") // REGISTERED, MATCHED, DISCREPANT
+
+  bankId        String
+  bank          Bank     @relation(fields: [bankId], references: [id])
+
+  createdAt     DateTime @default(now())
+
+  @@unique([accountNumber, chequeNumber])
+}

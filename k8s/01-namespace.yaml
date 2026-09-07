@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cts-system
+  labels:
+    app.kubernetes.io/name: cts-system
+    app.kubernetes.io/part-of: clearing-truncation-system

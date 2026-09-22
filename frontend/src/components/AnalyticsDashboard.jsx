@@ -148,7 +148,7 @@ export default function AnalyticsDashboard() {
               <div className="p-4 rounded-xl bg-brand-50 border border-brand-100 text-xs text-brand-900">
                 <div className="font-bold mb-1">Bilateral Clearing Channel Active</div>
                 <p className="text-[11px] text-brand-700">
-                  Surat Local Bank (SBIN0001234) ↔ Horizon Digital Bank (HDFC0005678). Bilateral clearing volume will reflect here as cheques are cleared and reconciled.
+                  Surat Bank (SBIN0001234) ↔ Horizon Digital Bank (HDFC0005678). Bilateral clearing volume will reflect here as cheques are cleared and reconciled.
                 </p>
               </div>
             )}

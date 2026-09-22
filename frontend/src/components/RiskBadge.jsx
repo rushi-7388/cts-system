@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function RiskBadge({ score = 0, tier = "LOW", factors = [] }) {
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") setShowModal(false);
+    }
+    if (showModal) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [showModal]);
 
   const colors = {
     LOW: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
@@ -25,8 +35,14 @@ export default function RiskBadge({ score = 0, tier = "LOW", factors = [] }) {
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-gray-100 animate-in fade-in zoom-in duration-150">
+        <div
+          onClick={() => setShowModal(false)}
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-gray-100 animate-in fade-in zoom-in duration-150"
+          >
             <div className="flex items-center justify-between pb-3 border-b">
               <div>
                 <h3 className="font-bold text-gray-900 text-base">Algorithmic Risk Assessment</h3>

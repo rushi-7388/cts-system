@@ -1,16 +1,79 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 import logo from "../assets/logo.jpg";
 import PositivePayRegistryModal from "./PositivePayRegistryModal";
 
+const DEMO_ROLES = [
+  {
+    role: "PRESENTING_BANK",
+    label: "Presenting Bank Clerk",
+    sublabel: "Surat Bank (SNB)",
+    email: "presenting@snb.com",
+    path: "/presenting",
+  },
+  {
+    role: "DRAWEE_BANK",
+    label: "Drawee Bank Verifier (Maker)",
+    sublabel: "Horizon Digital Bank (HDB)",
+    email: "drawee@hdb.com",
+    path: "/drawee",
+  },
+  {
+    role: "DRAWEE_BANK",
+    label: "Senior Approver (Checker)",
+    sublabel: "Horizon Digital Bank (HDB)",
+    email: "checker@hdb.com",
+    path: "/drawee",
+  },
+  {
+    role: "ADMIN",
+    label: "Clearing House Admin",
+    sublabel: "National Clearing House (CTS)",
+    email: "admin@cts.com",
+    path: "/admin",
+  },
+  {
+    role: "BRANCH_MANAGER",
+    label: "Branch Operations Manager",
+    sublabel: "Surat Bank (Athwa Branch)",
+    email: "manager@snb.com",
+    path: "/branch-manager",
+  },
+  {
+    role: "IT_STAFF",
+    label: "Core SRE & IT Staff",
+    sublabel: "Central Switch Infrastructure",
+    email: "itops@cts.com",
+    path: "/it-monitoring",
+  },
+  {
+    role: "COMPLIANCE_AUDITOR",
+    label: "Compliance & Audit Officer",
+    sublabel: "Regulatory Oversight Wing",
+    email: "auditor@rbi.org.in",
+    path: "/auditor",
+  },
+  {
+    role: "SETTLEMENT_OFFICER",
+    label: "Settlement & Treasury Officer",
+    sublabel: "National Treasury Settlement Desk",
+    email: "treasury@cts.com",
+    path: "/settlement",
+  },
+];
+
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, switchUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [systemHealthy, setSystemHealthy] = useState(true);
   const [chaosActive, setChaosActive] = useState(false);
   const [showPpsModal, setShowPpsModal] = useState(false);
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     async function checkHealth() {
@@ -27,81 +90,246 @@ export default function Navbar() {
     return () => clearInterval(interval);
   }, []);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowRoleDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  async function handleQuickSwitch(item) {
+    if (user?.email === item.email) {
+      setShowRoleDropdown(false);
+      navigate(item.path);
+      return;
+    }
+    setSwitching(true);
+    try {
+      await switchUser(item.email, "password123");
+      setShowRoleDropdown(false);
+      navigate(item.path);
+    } catch (err) {
+      console.error("Fast role switch failed:", err);
+    } finally {
+      setSwitching(false);
+    }
+  }
+
   function handleLogout() {
     logout();
     navigate("/login");
   }
 
+  const isAdmin = user?.role === "ADMIN";
+
   return (
     <>
-      <nav className="bg-brand-700 text-white px-6 py-2.5 flex items-center justify-between shadow-md">
+      <nav className="bg-slate-900 border-b border-slate-800 text-white px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-lg sticky top-0 z-40 backdrop-blur-md bg-slate-900/95">
+        {/* Left: Branding & Status */}
         <div className="flex items-center gap-4">
           <div
             onClick={() => navigate("/")}
             className="flex items-center gap-3 cursor-pointer group select-none"
           >
             <div className="relative flex items-center justify-center">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 rounded-full blur-[2px] opacity-70 group-hover:opacity-100 transition duration-300"></div>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 rounded-xl blur-[2px] opacity-70 group-hover:opacity-100 transition duration-300"></div>
               <img
                 src={logo}
                 alt="CTS Logo"
-                className="relative w-9 h-9 rounded-full object-cover border border-white/40 shadow-sm"
+                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover border border-white/40 shadow-sm"
               />
             </div>
             <div className="flex flex-col">
-              <div className="font-bold tracking-tight text-base leading-none flex items-center gap-2">
-                <span>CTS</span>
-                <span className="text-xs font-light text-brand-300 hidden md:inline">|</span>
-                <span className="text-xs font-medium text-brand-100 hidden md:inline tracking-normal">
+              <div className="font-extrabold tracking-tight text-sm sm:text-base leading-none flex items-center gap-2">
+                <span className="text-white">CTS</span>
+                <span className="text-slate-500 font-light hidden sm:inline">|</span>
+                <span className="text-xs font-semibold text-slate-200 hidden sm:inline tracking-normal">
                   Cheque Truncation System
                 </span>
               </div>
-              <span className="text-[10px] text-brand-200/90 font-mono tracking-wider uppercase mt-0.5 hidden sm:block">
-                Interbank Clearing & SRE
+              <span className="text-[10px] text-slate-400 font-mono tracking-wider uppercase mt-0.5 hidden md:block">
+                Interbank Clearing & SRE Platform
               </span>
             </div>
           </div>
 
           {/* Live System SRE Status Pill */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-brand-800/80 border border-brand-600">
-            <span
+          {/* <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800/80 border border-slate-700"> */}
+          {/* <span
               className={`w-2 h-2 rounded-full ${
-                !systemHealthy ? "bg-rose-400" : chaosActive ? "bg-amber-400 animate-ping" : "bg-emerald-400"
+                !systemHealthy
+                  ? "bg-rose-400 animate-ping"
+                  : chaosActive
+                  ? "bg-amber-400 animate-pulse"
+                  : "bg-emerald-400"
               }`}
-            ></span>
-            <span className="text-brand-100">
-              {!systemHealthy ? "Service Degraded" : chaosActive ? "Chaos Active" : "99.9% SLO Active"}
-            </span>
-          </div>
+            ></span> */}
+          {/* <span className="text-slate-300">
+              {!systemHealthy
+                ? "Service Degraded"
+                : chaosActive
+                ? "Chaos Active"
+                : "Core Switch: 99.9% SLO Active"}
+            </span> */}
+          {/* </div> */}
+
+          {/* Cross-portal quick tabs for Admin */}
+          {isAdmin && (
+            <div className="hidden 2xl:flex items-center gap-1 ml-2 bg-slate-800/60 p-1 rounded-lg border border-slate-700/60 text-xs">
+              <Link
+                to="/presenting"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/presenting"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                Presenting
+              </Link>
+              <Link
+                to="/drawee"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/drawee"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                Drawee
+              </Link>
+              <Link
+                to="/admin"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/admin"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                Switch
+              </Link>
+              <Link
+                to="/branch-manager"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/branch-manager"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                Branch
+              </Link>
+              <Link
+                to="/it-monitoring"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/it-monitoring"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                SRE
+              </Link>
+              <Link
+                to="/auditor"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/auditor"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                Audit
+              </Link>
+              <Link
+                to="/settlement"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/settlement"
+                    ? "bg-brand-600 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                  }`}
+              >
+                Settlement
+              </Link>
+            </div>
+          )}
         </div>
 
+        {/* Right: Actions & User Info */}
         {user && (
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2.5 sm:gap-3 text-xs">
             {/* Positive Pay System Action */}
-            <button
+            {/* <button
               type="button"
               onClick={() => setShowPpsModal(true)}
-              className="bg-brand-800 hover:bg-brand-900 border border-brand-600 text-amber-300 hover:text-amber-200 px-2.5 py-1 rounded text-xs font-bold transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              className="bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               title="Open Positive Pay System Central Registry"
             >
               <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <span className="hidden sm:inline">Positive Pay (PPS)</span>
-            </button>
+              <span className="hidden md:inline">Positive Pay (PPS)</span> */}
+            {/* </button> */}
 
-            <span className="text-xs sm:text-sm">
-              {user.name} · {user.bank?.name} ·{" "}
-              <span className="uppercase text-brand-200 font-semibold text-xs bg-brand-800 px-2 py-0.5 rounded">
+            {/* Role Switcher Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setShowRoleDropdown(!showRoleDropdown)}
+                className="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Switch active role"
+              >
+                <span>Switch Role</span>
+                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showRoleDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-1.5 z-50 animate-in fade-in duration-150">
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-2.5 py-1 border-b border-slate-800 mb-1">
+                    Select Active Role
+                  </div>
+                  {DEMO_ROLES.map((roleItem) => {
+                    const isCurrent = user?.email === roleItem.email;
+                    return (
+                      <button
+                        key={roleItem.email}
+                        type="button"
+                        onClick={() => handleQuickSwitch(roleItem)}
+                        disabled={switching}
+                        className={`w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors flex items-start gap-2 cursor-pointer ${isCurrent
+                            ? "bg-brand-600/20 text-brand-300 font-semibold border border-brand-500/30"
+                            : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                          }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${isCurrent ? "bg-brand-400" : "bg-slate-600"}`}></span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="truncate">{roleItem.label}</span>
+                            {isCurrent && (
+                              <span className="text-[10px] text-emerald-400 font-mono">Active</span>
+                            )}
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate">{roleItem.sublabel}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Current User Card */}
+            <div className="hidden md:flex items-center gap-2 pl-2 border-l border-slate-800 text-xs">
+              <div className="text-right">
+                <div className="font-semibold text-slate-200 leading-none">{user.name}</div>
+                <div className="text-[10px] text-slate-400 mt-0.5">{user.bank?.name}</div>
+              </div>
+              <span className="uppercase text-[10px] font-mono font-bold bg-slate-800 border border-slate-700 text-brand-300 px-2 py-0.5 rounded">
                 {user.role}
               </span>
-            </span>
+            </div>
+
+            {/* Logout */}
             <button
               type="button"
               onClick={handleLogout}
-              className="bg-brand-600 hover:bg-brand-500 px-3 py-1 rounded text-white text-xs font-medium transition-colors cursor-pointer"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700 transition-colors cursor-pointer"
             >
-              Logout
+              Sign out
             </button>
           </div>
         )}

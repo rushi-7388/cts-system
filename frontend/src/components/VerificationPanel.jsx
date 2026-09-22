@@ -28,6 +28,16 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") setShowReturnModal(false);
+    }
+    if (showReturnModal) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [showReturnModal]);
+
   async function transition(toStatus, returnReason = selectedReason) {
     setError("");
     if (toStatus === "RETURNED" && !returnReason) {
@@ -120,7 +130,6 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
             }`}
             title="Approve instrument and trigger instant RBI e-Kuber real-time realization"
           >
-            <span>⚡</span>
             <span>{cheque.status === "AWAITING_CHECKER" ? "Authorize & Clear" : "Clear & Settle"}</span>
           </button>
         )}
@@ -144,12 +153,20 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
 
       {/* Clean Statutory Return Modal */}
       {showReturnModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-100 text-left">
+        <div
+          onClick={() => setShowReturnModal(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-100 text-left"
+          >
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm">
-                  ✕
+                <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 text-sm">Statutory Cheque Dishonour</h3>
@@ -159,9 +176,11 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
               <button
                 type="button"
                 onClick={() => setShowReturnModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-lg leading-none cursor-pointer"
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
               >
-                ✕
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
@@ -230,8 +249,8 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
                 />
               </div>
 
-              <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-800 leading-snug">
-                ⚠️ Confirming this dishonour generates an immutable Section 138 court-admissible Return Memo with digital bank seal.
+              <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 leading-snug">
+                Confirming this dishonour generates a Section 138 statutory return memo.
               </div>
             </div>
 

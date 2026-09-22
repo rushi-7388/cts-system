@@ -11,7 +11,7 @@ function generatePacs008Xml({ settlement, cheques = [] }) {
   const totalAmount = Number(settlement.netAmount).toFixed(2);
   const nbOfTxs = cheques.length || 1;
 
-  const bankAName = settlement.bankA?.name || "Surat Local Bank";
+  const bankAName = settlement.bankA?.name || "Surat Bank";
   const bankAIfsc = settlement.bankA?.ifsc || "SBIN0001234";
   const bankBName = settlement.bankB?.name || "Horizon Digital Bank";
   const bankBIfsc = settlement.bankB?.ifsc || "HDFC0005678";

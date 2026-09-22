@@ -15,14 +15,14 @@ export default function DevOpsConsole() {
 
   async function loadData() {
     try {
-      const [statsRes, infoRes, telemRes] = await Promise.all([
+      const [statsRes, infoRes, telemRes] = await Promise.allSettled([
         client.get("/devops/sre-stats"),
         client.get("/devops/system-info"),
         client.get("/telemetry/recent"),
       ]);
-      setStats(statsRes.data);
-      setSystemInfo(infoRes.data);
-      setTelemetry(telemRes.data);
+      if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
+      if (infoRes.status === "fulfilled") setSystemInfo(infoRes.value.data);
+      if (telemRes.status === "fulfilled") setTelemetry(telemRes.value.data);
     } catch (err) {
       console.error("Failed to load DevOps stats:", err);
     } finally {
@@ -323,36 +323,95 @@ export default function DevOpsConsole() {
           </div>
 
           {/* Fault 3: Circuit Breaker Trip */}
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
-            <div className="text-xs font-bold text-gray-800 mb-1">Trip Core Circuit Breaker</div>
-            <p className="text-[11px] text-gray-500 mb-3">
-              Trips circuit breaker to OPEN state, halting downstream calls with 503.
-            </p>
-            <button
-              onClick={() => applyChaos({ circuitBreakerTripped: true }, "Circuit Breaker Tripped OPEN")}
-              className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
-            >
-              Trip Circuit Breaker
-            </button>
+          <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-gray-800">Core Circuit Breaker</span>
+                {stats?.chaos?.circuitBreakerTripped ? (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    {stats?.chaos?.circuitState || "OPEN"} ({stats?.chaos?.remainingCooldownSeconds || 0}s)
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    CLOSED
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-gray-500 mb-3">
+                {stats?.chaos?.circuitBreakerTripped
+                  ? `Active: Downstream requests return 503 to prevent cascading failure. Auto-recovers in ${stats?.chaos?.remainingCooldownSeconds || 0}s.`
+                  : "Trips circuit breaker to OPEN state, halting downstream calls with 503 (auto-recovers after 15s)."}
+              </p>
+            </div>
+            {stats?.chaos?.circuitBreakerTripped ? (
+              <button
+                type="button"
+                onClick={handleResetChaos}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
+              >
+                Restore Circuit Breaker (Now)
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => applyChaos({ circuitBreakerTripped: true }, "Circuit Breaker Tripped OPEN (15s auto-cooldown)")}
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
+              >
+                Trip Circuit Breaker
+              </button>
+            )}
           </div>
 
           {/* Live Probe Tester */}
-          <div className="p-4 rounded-lg bg-brand-50/50 border border-brand-200">
-            <div className="text-xs font-bold text-brand-900 mb-1">Test Resilience Probe</div>
-            <p className="text-[11px] text-brand-700 mb-3">
-              Fires a live request through the stack to observe the active fault.
-            </p>
-            <button
-              onClick={sendProbeRequest}
-              className="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
-            >
-              Send Live Probe
-            </button>
-            {probeResult && (
-              <div className="mt-2 text-[11px] font-mono p-1.5 rounded bg-white border">
-                Status: <span className={probeResult.success ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>{probeResult.status}</span> ({probeResult.durationMs}ms)
-              </div>
-            )}
+          <div className="p-4 rounded-lg bg-brand-50/50 border border-brand-200 flex flex-col justify-between">
+            <div>
+              <div className="text-xs font-bold text-brand-900 mb-1">Test Resilience Probe</div>
+              <p className="text-[11px] text-brand-700 mb-3">
+                Fires a live request through the stack to observe the active fault.
+              </p>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={sendProbeRequest}
+                className="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
+              >
+                Send Live Probe
+              </button>
+              {probeResult && (
+                <div className="mt-2 text-[11px] font-mono p-2 rounded bg-white border border-slate-200 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span>
+                      Status:{" "}
+                      <span
+                        className={
+                          probeResult.status === 200
+                            ? "text-emerald-600 font-bold"
+                            : probeResult.status === 503
+                            ? "text-amber-600 font-bold"
+                            : "text-rose-600 font-bold"
+                        }
+                      >
+                        {probeResult.status}
+                      </span>
+                    </span>
+                    <span className="text-gray-400 text-[10px]">{probeResult.durationMs}ms</span>
+                  </div>
+                  {probeResult.status === 503 && (
+                    <div className="text-[10px] text-amber-700 font-sans leading-tight">
+                      Circuit Breaker OPEN: Downstream Core Banking call blocked to prevent cascade failure.
+                    </div>
+                  )}
+                  {probeResult.status === 200 && (
+                    <div className="text-[10px] text-emerald-700 font-sans leading-tight">
+                      Downstream Core Banking pipeline healthy (HTTP 200 OK).
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

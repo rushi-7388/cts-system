@@ -16,14 +16,14 @@ const router = express.Router();
 
 router.use(authenticate);
 
-router.post("/run", authorize("ADMIN"), runSettlement);
+router.post("/run", authorize("SETTLEMENT_OFFICER", "ADMIN"), runSettlement);
 router.get("/liquidity-monitor", getLiquidityMonitor);
-router.patch("/collateral-limit", updateCollateralLimit);
+router.patch("/collateral-limit", authorize("SETTLEMENT_OFFICER", "ADMIN"), updateCollateralLimit);
 
 // Continuous Clearing & RBI e-Kuber Routes
 router.get("/continuous/status", getContinuousSettlementStatus);
-router.post("/continuous/toggle", authorize("ADMIN"), toggleContinuousMode);
-router.post("/continuous/settle-now/:chequeId", authorize("ADMIN"), settleChequeEkuber);
+router.post("/continuous/toggle", authorize("SETTLEMENT_OFFICER", "ADMIN"), toggleContinuousMode);
+router.post("/continuous/settle-now/:chequeId", authorize("SETTLEMENT_OFFICER", "ADMIN"), settleChequeEkuber);
 router.get("/ekuber/:id/pacs009", getEkuberPacs009Xml);
 
 router.get("/", listSettlements);

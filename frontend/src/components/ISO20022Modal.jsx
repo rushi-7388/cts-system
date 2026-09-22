@@ -29,6 +29,14 @@ export default function ISO20022Modal({ settlementId, chequeId, onClose }) {
     setTimeout(() => setCopied(false), 2500);
   }
 
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose?.();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   function handleDownload() {
     const blob = new Blob([xml], { type: "application/xml" });
     const url = URL.createObjectURL(blob);
@@ -40,8 +48,14 @@ export default function ISO20022Modal({ settlementId, chequeId, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden border border-gray-100">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden border border-gray-100"
+      >
         <div className="px-6 py-4 border-b flex items-center justify-between bg-gray-50">
           <div>
             <div className="flex items-center gap-2">

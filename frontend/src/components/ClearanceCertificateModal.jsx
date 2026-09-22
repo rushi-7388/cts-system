@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function ClearanceCertificateModal({ cheque, onClose }) {
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose?.();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   if (!cheque) return null;
 
   function handlePrint() {
@@ -10,8 +18,14 @@ export default function ClearanceCertificateModal({ cheque, onClose }) {
   const certificateRef = `CTS-CERT-${cheque.chequeNumber}-${cheque.id.slice(0, 8).toUpperCase()}`;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col overflow-hidden border border-gray-100">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col overflow-hidden border border-gray-100"
+      >
         {/* Modal Controls (Hidden in Print) */}
         <div className="px-6 py-3 border-b flex items-center justify-between bg-gray-50 print:hidden">
           <span className="font-bold text-xs text-gray-700 uppercase tracking-wider">

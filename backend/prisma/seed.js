@@ -10,8 +10,8 @@ async function main() {
 
   const bankA = await prisma.bank.upsert({
     where: { ifsc: "SBIN0001234" },
-    update: { name: "Surat Local Bank" },
-    create: { name: "Surat Local Bank", ifsc: "SBIN0001234", code: "SNB" },
+    update: { name: "Surat Bank" },
+    create: { name: "Surat Bank", ifsc: "SBIN0001234", code: "SNB" },
   });
 
   const bankB = await prisma.bank.upsert({
@@ -64,6 +64,58 @@ async function main() {
       email: "admin@cts.com",
       password: hash,
       role: "ADMIN",
+      bankId: bankA.id,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "manager@snb.com" },
+    update: {},
+    create: {
+      name: "Rajesh Varma (Branch Manager)",
+      email: "manager@snb.com",
+      password: hash,
+      role: "BRANCH_MANAGER",
+      branchName: "Athwa Lines Branch",
+      bankId: bankA.id,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "itops@cts.com" },
+    update: {},
+    create: {
+      name: "Neha Sharma (Core SRE & IT Staff)",
+      email: "itops@cts.com",
+      password: hash,
+      role: "IT_STAFF",
+      branchName: "Central Switch Infrastructure",
+      bankId: bankA.id,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "auditor@rbi.org.in" },
+    update: {},
+    create: {
+      name: "Vikram Mehta (Compliance Auditor)",
+      email: "auditor@rbi.org.in",
+      password: hash,
+      role: "COMPLIANCE_AUDITOR",
+      branchName: "Regulatory Oversight Wing",
+      bankId: bankA.id,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "treasury@cts.com" },
+    update: {},
+    create: {
+      name: "Pooja Hegde (Settlement Officer)",
+      email: "treasury@cts.com",
+      password: hash,
+      role: "SETTLEMENT_OFFICER",
+      branchName: "National Treasury Settlement Desk",
       bankId: bankA.id,
     },
   });
@@ -159,6 +211,10 @@ async function main() {
   console.log("- drawee@hdb.com (Verifier - Drawee Maker)");
   console.log("- checker@hdb.com (Senior Approver - Drawee Checker)");
   console.log("- admin@cts.com (System Administrator)");
+  console.log("- manager@snb.com (Branch Operations Manager)");
+  console.log("- itops@cts.com (Core SRE & IT Staff)");
+  console.log("- auditor@rbi.org.in (Compliance & Regulatory Auditor)");
+  console.log("- treasury@cts.com (Treasury & Settlement Officer)");
 }
 
 main()

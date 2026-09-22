@@ -15,9 +15,17 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
     client
       .get(`/cheques/${cheque.id}/signature-comparison`)
       .then(({ data }) => setSignatureData(data))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setSigLoading(false));
   }, [cheque?.id]);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose?.();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   if (!cheque) return null;
 
@@ -35,8 +43,14 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
   const isSuspectSig = signatureData && signatureData.metrics?.matchScore < 80;
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-gray-100">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-gray-100"
+      >
         {/* Header */}
         <div className="px-6 py-3.5 border-b flex flex-wrap items-center justify-between gap-3 bg-gray-50">
           <div>
@@ -83,26 +97,24 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               <button
                 type="button"
                 onClick={() => setActiveTab("cheque")}
-                className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === "cheque" ? "bg-white text-gray-900 shadow-xs" : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "cheque" ? "bg-white text-gray-900 shadow-xs" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
-                <span>🖼️ Cheque Canvas</span>
+                <span>Cheque Canvas</span>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("signature")}
-                className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === "signature"
+                className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "signature"
                     ? isSuspectSig
                       ? "bg-rose-600 text-white shadow-xs"
                       : "bg-brand-700 text-white shadow-xs"
                     : isSuspectSig
-                    ? "text-rose-700 hover:text-rose-900"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                      ? "text-rose-700 hover:text-rose-900"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
-                <span>🖋️ AI Signature Check (1:1)</span>
+                <span>Signature Verification</span>
                 {isSuspectSig && <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>}
               </button>
             </div>
@@ -132,18 +144,16 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                   <button
                     type="button"
                     onClick={() => setFilterMode("normal")}
-                    className={`px-2.5 py-0.5 rounded transition-colors ${
-                      filterMode === "normal" ? "bg-brand-700 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`px-2.5 py-0.5 rounded transition-colors ${filterMode === "normal" ? "bg-brand-700 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
+                      }`}
                   >
                     Standard
                   </button>
                   <button
                     type="button"
                     onClick={() => setFilterMode("uv")}
-                    className={`px-2.5 py-0.5 rounded transition-colors flex items-center gap-1 ${
-                      filterMode === "uv" ? "bg-purple-600 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`px-2.5 py-0.5 rounded transition-colors flex items-center gap-1 ${filterMode === "uv" ? "bg-purple-600 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
+                      }`}
                     title="UV Light Simulation (reveals fluorescent security fibers and watermarks)"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-purple-300"></span>
@@ -152,9 +162,8 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                   <button
                     type="button"
                     onClick={() => setFilterMode("invert")}
-                    className={`px-2.5 py-0.5 rounded transition-colors ${
-                      filterMode === "invert" ? "bg-gray-900 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`px-2.5 py-0.5 rounded transition-colors ${filterMode === "invert" ? "bg-gray-900 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
+                      }`}
                     title="Inverted Grayscale (high-contrast for E-13B MICR line validation)"
                   >
                     Invert MICR
@@ -206,21 +215,24 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                 style={{ transform: `scale(${zoom})` }}
               >
                 {cheque.imageUrl ? (
-                  <div className="relative rounded-lg overflow-hidden border-2 border-white/20 shadow-2xl">
+                  <div className="relative rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl bg-black/40">
                     <img
                       src={cheque.imageUrl}
                       alt={`Cheque ${cheque.chequeNumber}`}
-                      className="max-h-[500px] max-w-full object-contain rounded"
+                      className="max-h-[500px] max-w-full object-contain rounded-lg"
                       style={filterStyles[filterMode]}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = cheque.chequeNumber === "000102" ? "/cheque-000102.jpg" : cheque.chequeNumber === "000123" ? "/cheque-000123.jpg" : "/sample-cheque.jpg";
+                      }}
                     />
-                    <div className="absolute bottom-2 left-4 right-4 border-2 border-dashed border-emerald-400/80 bg-emerald-500/10 px-3 py-1 rounded text-right">
-                      <span className="text-[10px] font-mono font-bold text-emerald-300 bg-black/60 px-1.5 py-0.5 rounded uppercase">
+                    <div className="absolute bottom-2 left-4 right-4 border-2 border-dashed border-emerald-400/80 bg-emerald-500/10 px-3 py-1 rounded text-right backdrop-blur-xs">
+                      <span className="text-[10px] font-mono font-bold text-emerald-300 bg-black/70 px-2 py-0.5 rounded uppercase">
                         MICR Zone Detected: {cheque.micrCode}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  /* High-fidelity Realistic Digital Cheque Canvas */
                   <div
                     className="w-[620px] h-[300px] bg-[#fbf8ee] border-2 border-[#d9c9a6] rounded-lg shadow-2xl p-6 relative font-serif text-gray-900 flex flex-col justify-between"
                     style={filterStyles[filterMode]}
@@ -231,7 +243,7 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                     <div className="flex justify-between items-start relative z-10">
                       <div>
                         <div className="font-bold text-lg tracking-wide text-brand-900 uppercase">
-                          {cheque.draweeBank?.name || "Surat Local Bank"}
+                          {cheque.draweeBank?.name || "Surat Bank"}
                         </div>
                         <div className="text-[11px] text-gray-600 font-mono">IFSC: {cheque.ifsc}</div>
                       </div>
@@ -296,19 +308,17 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               <>
                 {/* AI Similarity Gauge Banner */}
                 <div
-                  className={`p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 shadow-xs ${
-                    signatureData.metrics.matchScore >= 80
+                  className={`p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 shadow-xs ${signatureData.metrics.matchScore >= 80
                       ? "bg-emerald-50 border-emerald-200 text-emerald-950"
                       : "bg-rose-50 border-rose-200 text-rose-950"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center font-mono font-black text-lg ${
-                        signatureData.metrics.matchScore >= 80
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center font-mono font-black text-lg ${signatureData.metrics.matchScore >= 80
                           ? "bg-emerald-600 text-white"
                           : "bg-rose-600 text-white animate-pulse"
-                      }`}
+                        }`}
                     >
                       {signatureData.metrics.matchScore}%
                     </div>
@@ -320,11 +330,10 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                             : "AI Biometric Alert: Suspect Signature Mismatch!"}
                         </span>
                         <span
-                          className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                            signatureData.metrics.matchScore >= 80
+                          className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${signatureData.metrics.matchScore >= 80
                               ? "bg-emerald-200 text-emerald-900"
                               : "bg-rose-200 text-rose-900"
-                          }`}
+                            }`}
                         >
                           {signatureData.metrics.verdict}
                         </span>
@@ -400,19 +409,17 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                     </div>
 
                     <div
-                      className={`border rounded-lg p-6 h-40 flex items-center justify-center relative shadow-inner ${
-                        signatureData.metrics.matchScore >= 80
+                      className={`border rounded-lg p-6 h-40 flex items-center justify-center relative shadow-inner ${signatureData.metrics.matchScore >= 80
                           ? "bg-[#fcfbf9] border-gray-200"
                           : "bg-rose-50/50 border-rose-200"
-                      }`}
+                        }`}
                     >
                       <div className="absolute top-2 left-2 text-[9px] font-mono text-gray-400">
-                        Cheque #{cheque.chequeNumber} · 300 DPI Scanner Zone
+                        Cheque #{cheque.chequeNumber} · Signature Scrutiny Zone
                       </div>
                       <svg
-                        className={`w-full h-24 ${
-                          signatureData.metrics.matchScore >= 80 ? "text-gray-900" : "text-rose-900"
-                        }`}
+                        className={`w-full h-24 ${signatureData.metrics.matchScore >= 80 ? "text-gray-900" : "text-rose-900"
+                          }`}
                         viewBox="0 0 380 90"
                         fill="none"
                         stroke="currentColor"
@@ -450,7 +457,7 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               <div>
                 <div className="text-xs font-bold text-gray-900">Direct Verification Action Deck</div>
                 <div className="text-[11px] text-gray-500">
-                  Inspect UV blacklight & AI signatures above, then clear, verify, or return with 1 click:
+                  Review security features and signature match, then select a clearing disposition:
                 </div>
               </div>
             </div>
@@ -487,7 +494,7 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
               </svg>
-              <span>Positive Pay & Biometric Shield</span>
+              <span>Positive Pay & Signature Verification</span>
             </span>
           </div>
 

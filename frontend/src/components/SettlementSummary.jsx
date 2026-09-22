@@ -100,8 +100,8 @@ export default function SettlementSummary() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center justify-center p-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-mono font-bold">
-                🏛️ RBI/CTS MONITOR
+              <span className="inline-flex items-center justify-center px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-xs font-mono font-semibold">
+                RBI/CTS MONITOR
               </span>
               <h2 className="font-bold text-base text-gray-900">
                 Interbank Liquidity Cap & Central Bank Settlement Credit Monitor
@@ -116,24 +116,23 @@ export default function SettlementSummary() {
               System Cap Status:{" "}
               {warningBanks.length > 0 ? (
                 <span className="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">
-                  ⚠️ LIQUIDITY_WARNING ACTIVE
+                  LIQUIDITY WARNING ACTIVE
                 </span>
               ) : (
                 <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  🟢 STABLE (UNDER 85%)
+                  STABLE (&lt;85%)
                 </span>
               )}
             </span>
           </div>
         </div>
 
-        {/* LIQUIDITY_WARNING High-Priority Regulatory Alert Banner */}
+        {/* LIQUIDITY_WARNING Regulatory Alert Banner */}
         {warningBanks.length > 0 && (
-          <div className="p-4 rounded-xl bg-red-50 border-2 border-red-500 text-red-900 shadow-sm animate-pulse space-y-2">
+          <div className="p-4 rounded-xl bg-red-50 border border-red-300 text-red-900 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xl">🚨</span>
-              <h3 className="font-bold text-sm text-red-800 tracking-wide uppercase">
-                CRITICAL REGULATORY ALERT: LIQUIDITY_WARNING TRIGGERED
+              <h3 className="font-bold text-xs text-red-800 tracking-wide uppercase">
+                REGULATORY NOTICE: INTRADAY LIQUIDITY WARNING
               </h3>
             </div>
             <p className="text-xs text-red-700 leading-relaxed font-medium">
@@ -156,14 +155,13 @@ export default function SettlementSummary() {
 
         {/* Real-time Bilateral Exposure Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Surat Local Bank Card */}
+          {/* Surat Bank Card */}
           {primaryBank && (
             <div
-              className={`p-4 rounded-xl border transition-all ${
-                primaryBank.liquidityWarning
+              className={`p-4 rounded-xl border transition-all ${primaryBank.liquidityWarning
                   ? "bg-red-50/40 border-red-300 shadow-sm"
                   : "bg-slate-50 border-gray-200"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -173,11 +171,10 @@ export default function SettlementSummary() {
                   </span>
                 </div>
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
-                    primaryBank.liquidityWarning
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${primaryBank.liquidityWarning
                       ? "bg-red-100 text-red-800 border border-red-300"
                       : "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                  }`}
+                    }`}
                 >
                   {primaryBank.liquidityWarning ? "LIQUIDITY_WARNING" : "NORMAL"}
                 </span>
@@ -188,26 +185,24 @@ export default function SettlementSummary() {
                 <div className="flex justify-between text-[11px]">
                   <span className="font-semibold text-gray-600">Intraday Collateral Stress Bar:</span>
                   <span
-                    className={`font-mono font-bold ${
-                      primaryBank.liquidityWarning
+                    className={`font-mono font-bold ${primaryBank.liquidityWarning
                         ? "text-red-600 font-extrabold"
                         : primaryBank.utilizationPercent >= 60
-                        ? "text-amber-600"
-                        : "text-emerald-700"
-                    }`}
+                          ? "text-amber-600"
+                          : "text-emerald-700"
+                      }`}
                   >
                     {primaryBank.utilizationPercent}% Utilized
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      primaryBank.liquidityWarning
+                    className={`h-full rounded-full transition-all duration-500 ${primaryBank.liquidityWarning
                         ? "bg-red-600"
                         : primaryBank.utilizationPercent >= 60
-                        ? "bg-amber-500"
-                        : "bg-emerald-500"
-                    }`}
+                          ? "bg-amber-500"
+                          : "bg-emerald-500"
+                      }`}
                     style={{ width: `${Math.min(100, primaryBank.utilizationPercent)}%` }}
                   />
                   {/* 85% Warning threshold line marker */}
@@ -219,7 +214,7 @@ export default function SettlementSummary() {
                 </div>
                 <div className="flex justify-between text-[9px] text-gray-400 font-mono">
                   <span>0%</span>
-                  <span className="text-red-500 font-bold">▲ 85% Cap Trigger</span>
+                  <span className="text-red-500 font-bold">85% Cap Threshold</span>
                   <span>100%</span>
                 </div>
               </div>
@@ -241,9 +236,8 @@ export default function SettlementSummary() {
                 <div>
                   <span className="text-[10px] text-gray-500 block">Net Clearing Position</span>
                   <span
-                    className={`font-bold ${
-                      primaryBank.netPosition >= 0 ? "text-emerald-700" : "text-red-700"
-                    }`}
+                    className={`font-bold ${primaryBank.netPosition >= 0 ? "text-emerald-700" : "text-red-700"
+                      }`}
                   >
                     {primaryBank.netPosition >= 0 ? "+" : "-"}₹
                     {Math.abs(primaryBank.netPosition).toLocaleString("en-IN")}{" "}
@@ -263,11 +257,10 @@ export default function SettlementSummary() {
           {/* Horizon Digital Bank Card */}
           {counterpartyBank && (
             <div
-              className={`p-4 rounded-xl border transition-all ${
-                counterpartyBank.liquidityWarning
+              className={`p-4 rounded-xl border transition-all ${counterpartyBank.liquidityWarning
                   ? "bg-red-50/40 border-red-300 shadow-sm"
                   : "bg-slate-50 border-gray-200"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -277,11 +270,10 @@ export default function SettlementSummary() {
                   </span>
                 </div>
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
-                    counterpartyBank.liquidityWarning
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${counterpartyBank.liquidityWarning
                       ? "bg-red-100 text-red-800 border border-red-300"
                       : "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                  }`}
+                    }`}
                 >
                   {counterpartyBank.liquidityWarning ? "LIQUIDITY_WARNING" : "NORMAL"}
                 </span>
@@ -292,26 +284,24 @@ export default function SettlementSummary() {
                 <div className="flex justify-between text-[11px]">
                   <span className="font-semibold text-gray-600">Intraday Collateral Stress Bar:</span>
                   <span
-                    className={`font-mono font-bold ${
-                      counterpartyBank.liquidityWarning
+                    className={`font-mono font-bold ${counterpartyBank.liquidityWarning
                         ? "text-red-600 font-extrabold"
                         : counterpartyBank.utilizationPercent >= 60
-                        ? "text-amber-600"
-                        : "text-emerald-700"
-                    }`}
+                          ? "text-amber-600"
+                          : "text-emerald-700"
+                      }`}
                   >
                     {counterpartyBank.utilizationPercent}% Utilized
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      counterpartyBank.liquidityWarning
+                    className={`h-full rounded-full transition-all duration-500 ${counterpartyBank.liquidityWarning
                         ? "bg-red-600"
                         : counterpartyBank.utilizationPercent >= 60
-                        ? "bg-amber-500"
-                        : "bg-emerald-500"
-                    }`}
+                          ? "bg-amber-500"
+                          : "bg-emerald-500"
+                      }`}
                     style={{ width: `${Math.min(100, counterpartyBank.utilizationPercent)}%` }}
                   />
                   {/* 85% Warning threshold line marker */}
@@ -323,7 +313,7 @@ export default function SettlementSummary() {
                 </div>
                 <div className="flex justify-between text-[9px] text-gray-400 font-mono">
                   <span>0%</span>
-                  <span className="text-red-500 font-bold">▲ 85% Cap Trigger</span>
+                  <span className="text-red-500 font-bold">85% Cap Threshold</span>
                   <span>100%</span>
                 </div>
               </div>
@@ -345,9 +335,8 @@ export default function SettlementSummary() {
                 <div>
                   <span className="text-[10px] text-gray-500 block">Net Clearing Position</span>
                   <span
-                    className={`font-bold ${
-                      counterpartyBank.netPosition >= 0 ? "text-emerald-700" : "text-red-700"
-                    }`}
+                    className={`font-bold ${counterpartyBank.netPosition >= 0 ? "text-emerald-700" : "text-red-700"
+                      }`}
                   >
                     {counterpartyBank.netPosition >= 0 ? "+" : "-"}₹
                     {Math.abs(counterpartyBank.netPosition).toLocaleString("en-IN")}{" "}
@@ -369,11 +358,10 @@ export default function SettlementSummary() {
         <div className="p-3.5 bg-slate-900 text-slate-200 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
           <div>
             <span className="font-bold text-slate-100 flex items-center gap-1.5">
-              <span>🧪</span> Central Bank Stress Testing Simulator (85% Trigger Verification)
+              Intraday Exposure Stress Simulation
             </span>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Adjust Surat Local Bank intraday collateral allocation to immediately simulate and verify the
-              LIQUIDITY_WARNING indicator.
+              Adjust intraday collateral allocation to verify regulatory alert triggers.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -381,19 +369,19 @@ export default function SettlementSummary() {
               type="button"
               disabled={stressSimulating}
               onClick={handleSimulateBreach}
-              className="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] transition-colors cursor-pointer disabled:opacity-50"
+              className="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-[11px] transition-colors cursor-pointer disabled:opacity-50"
               title="Sets clearing collateral below intraday exposure to trigger > 85% Warning"
             >
-              🚨 Simulate Breached (&gt;85% Warning)
+              Simulate Cap Breach (&gt;85%)
             </button>
             <button
               type="button"
               disabled={stressSimulating}
               onClick={handleResetCollateral}
-              className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition-colors cursor-pointer disabled:opacity-50"
-              title="Resets standard collateral caps for all clearing banks (Safe)"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-medium text-[11px] transition-colors cursor-pointer disabled:opacity-50"
+              title="Resets standard collateral caps for all clearing banks"
             >
-              🟢 Reset Standard Caps
+              Reset Collateral Caps
             </button>
           </div>
         </div>
@@ -429,16 +417,16 @@ export default function SettlementSummary() {
             No settlement cycles have been executed yet. Cleared cheques will be netted and reconciled here.
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border border-gray-200 rounded-xl">
             <table className="min-w-full text-xs">
               <thead className="bg-gray-50 text-gray-500 text-[10px] uppercase tracking-wider border-b">
                 <tr>
-                  <th className="text-left px-3 py-2">Cycle Date</th>
-                  <th className="text-left px-3 py-2">Creditor Bank</th>
-                  <th className="text-left px-3 py-2">Debtor Bank</th>
-                  <th className="text-left px-3 py-2">Direction</th>
-                  <th className="text-right px-3 py-2">Netted Volume</th>
-                  <th className="text-right px-3 py-2">ISO 20022 Standard</th>
+                  <th className="text-left px-3 py-2.5">Cycle Date</th>
+                  <th className="text-left px-3 py-2.5">Creditor Bank</th>
+                  <th className="text-left px-3 py-2.5">Debtor Bank</th>
+                  <th className="text-left px-3 py-2.5">Direction</th>
+                  <th className="text-right px-3 py-2.5">Netted Volume</th>
+                  <th className="text-right px-3 py-2.5">ISO 20022 Standard</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -451,7 +439,9 @@ export default function SettlementSummary() {
                     <td className="px-3 py-2.5 font-semibold text-gray-800">{s.bankB?.name}</td>
                     <td className="px-3 py-2.5 font-mono">
                       <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-[10px] font-bold">
-                        {s.direction === "A_TO_B" ? "Bank A → Bank B" : "Bank B → Bank A"}
+                        {s.direction === "A_TO_B"
+                          ? `${s.bankA?.code || "Bank A"} → ${s.bankB?.code || "Bank B"}`
+                          : `${s.bankB?.code || "Bank B"} → ${s.bankA?.code || "Bank A"}`}
                       </span>
                     </td>
                     <td className="px-3 py-2.5 text-right font-mono font-bold text-gray-900">

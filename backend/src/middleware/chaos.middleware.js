@@ -5,7 +5,9 @@ async function chaosMiddleware(req, res, next) {
   if (
     req.path.startsWith("/health") ||
     req.path.startsWith("/metrics") ||
+    req.path.startsWith("/devops") ||
     req.path.startsWith("/api/devops") ||
+    req.path.startsWith("/telemetry") ||
     req.path.startsWith("/api/telemetry")
   ) {
     return next();
@@ -18,10 +20,17 @@ async function chaosMiddleware(req, res, next) {
 
   // 1. Circuit Breaker Simulation
   if (state.circuitBreakerTripped) {
+    if (state.circuitState === "HALF_OPEN") {
+      // In HALF_OPEN state, allow 50% probe traffic to verify downstream recovery
+      if (Math.random() < 0.5) {
+        return next();
+      }
+    }
     return res.status(503).json({
       error: "Circuit Breaker OPEN: Downstream Core Banking Interconnect unavailable (Simulated Fault)",
-      circuitState: "OPEN",
-      suggestedAction: "Wait for circuit half-open state or reset chaos in DevOps Console",
+      circuitState: state.circuitState,
+      remainingCooldownSeconds: state.remainingCooldownSeconds,
+      suggestedAction: `Circuit state is ${state.circuitState}. Auto-recovering in ${state.remainingCooldownSeconds}s, or click 'Restore Normal Operations' in DevOps Console`,
     });
   }
 

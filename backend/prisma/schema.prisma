@@ -11,6 +11,10 @@ enum Role {
   PRESENTING_BANK
   DRAWEE_BANK
   ADMIN
+  BRANCH_MANAGER
+  IT_STAFF
+  COMPLIANCE_AUDITOR
+  SETTLEMENT_OFFICER
 }
 
 enum ChequeStatus {
@@ -54,6 +58,7 @@ model User {
   email     String   @unique
   password  String
   role      Role
+  branchName String?
 
   bankId String
   bank   Bank   @relation(fields: [bankId], references: [id])
@@ -117,6 +122,8 @@ model Cheque {
   // Clearing Batch Association
   batchId       String?
   batch         Batch?       @relation(fields: [batchId], references: [id])
+  branchName    String?      @default("Athwa Lines Branch")
+  branchManagerApproved Boolean? @default(true)
 
   presentingBankId String
   presentingBank   Bank   @relation("PresentingBank", fields: [presentingBankId], references: [id])

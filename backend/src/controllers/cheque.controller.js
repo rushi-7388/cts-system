@@ -41,8 +41,15 @@ async function createCheque(req, res) {
       return res.status(404).json({ error: "Drawee bank with that IFSC not found in the system" });
     }
 
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    const imageHash = req.file ? hashFile(req.file.path) : null;
+    let imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    let imageHash = req.file ? hashFile(req.file.path) : null;
+
+    if (!imageUrl) {
+      if (parsed.chequeNumber === "000102") imageUrl = "/cheque-000102.jpg";
+      else if (parsed.chequeNumber === "000123") imageUrl = "/cheque-000123.jpg";
+      else imageUrl = "/sample-cheque.jpg";
+      imageHash = `sha256_cts2010_${parsed.chequeNumber}_${Date.now()}`;
+    }
 
     // 1. Dynamic Risk Evaluation (0 - 100) with Positive Pay Cross-Match
     const riskEval = await evaluateChequeRisk({
@@ -252,7 +259,7 @@ async function getSignatureComparison(req, res) {
   }
 }
 
-// Bulk ingest cheques from branch optical sorter scanner / CSV manifest
+// Bulk ingest cheques from branch batch upload / CSV manifest
 async function bulkIngestCheques(req, res) {
   try {
     const { batchName, instruments } = req.body;
@@ -277,10 +284,10 @@ async function bulkIngestCheques(req, res) {
         orderBy: { createdAt: "desc" },
       });
       if (!batch) {
-        const code = `OPT-SORTER-${Date.now().toString().slice(-6)}`;
+        const code = `BATCH-${Date.now().toString().slice(-6)}`;
         batch = await prisma.batch.create({
           data: {
-            sessionName: `Branch Optical Sorter Batch ${code}`,
+            sessionName: `Clearing Ingestion Batch ${code}`,
             sessionCode: code,
             status: "OPEN",
           },
@@ -343,7 +350,7 @@ async function bulkIngestCheques(req, res) {
             ifsc: "SBIN0001234",
             amount,
             payeeName,
-            imageUrl: item.imageUrl || "/sample-cheque.jpg",
+            imageUrl: item.imageUrl || (chequeNumber === "000102" ? "/cheque-000102.jpg" : chequeNumber === "000123" ? "/cheque-000123.jpg" : "/sample-cheque.jpg"),
             imageHash: `sha256_${Date.now()}_${chequeNumber}`,
             status: "PRESENTED",
             riskScore: riskEval.score,
@@ -366,7 +373,7 @@ async function bulkIngestCheques(req, res) {
           chequeId: cheque.id,
           fromStatus: null,
           toStatus: "PRESENTED",
-          remarks: `Branch Optical Sorter Batch ${batch.sessionCode} Ingestion · Risk: ${riskEval.score}/100 · PPS: ${riskEval.ppsStatus}`,
+          remarks: `Clearing Batch ${batch.sessionCode} Ingestion · Risk: ${riskEval.score}/100 · PPS: ${riskEval.ppsStatus}`,
           actorId: req.user.id,
         });
 

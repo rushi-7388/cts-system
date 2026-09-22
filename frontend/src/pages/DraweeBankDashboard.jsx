@@ -10,19 +10,12 @@ import { useClearingEvents } from "../hooks/useClearingEvents";
 import { useAuth } from "../context/AuthContext";
 import client from "../api/client";
 
-function StatCard({ label, value, subtext, color, icon, pulse }) {
+function StatCard({ label, value, subtext, color }) {
   return (
-    <div className="bg-white rounded-2xl shadow-xs border border-gray-200/80 p-4 relative overflow-hidden transition-all hover:shadow-sm">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">{label}</div>
-          <div className={`text-2xl font-black mt-1 tracking-tight ${color || "text-gray-900"}`}>{value}</div>
-          {subtext && <div className="text-[11px] text-gray-400 mt-0.5">{subtext}</div>}
-        </div>
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg ${pulse ? "animate-pulse" : ""} ${color ? "bg-opacity-10" : "bg-gray-100"}`}>
-          {icon}
-        </div>
-      </div>
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 relative overflow-hidden transition-all shadow-xs">
+      <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{label}</div>
+      <div className={`text-2xl font-bold mt-1 tracking-tight ${color || "text-slate-900"}`}>{value}</div>
+      {subtext && <div className="text-[11px] text-slate-400 mt-0.5">{subtext}</div>}
     </div>
   );
 }
@@ -114,96 +107,122 @@ export default function DraweeBankDashboard() {
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
         {/* Executive Header Banner */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h1 className="text-2xl font-black text-gray-900 tracking-tight">
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">
                 Inward Clearing & Verification Workbench
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1">
-                <span>🏛️</span>
-                <span>Horizon Digital Bank (HDFC0005678)</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                Horizon Digital Bank (HDFC0005678)
               </span>
             </div>
-            <p className="text-xs text-gray-500">
-              Drawee Cheque Scrutiny Desk · CTS-2010 Compliance · AI Biometric Specimen Signatures · Real-Time e-Kuber Settlement
+            <p className="text-xs text-slate-500">
+              Drawee Scrutiny Desk · CTS-2010 Standards · e-Kuber Settlement
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="px-3 py-1.5 rounded-xl bg-gray-50 border border-gray-200 text-xs flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-gray-500">Logged Officer:</span>
-              <span className="font-bold text-gray-900">{user?.name || "Drawee Verifier"}</span>
-              <span className="text-[10px] font-mono font-bold bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-200">
-                {user?.role === "DRAWEE_BANK" ? "DRA плевое / VERIFIER" : user?.role}
+            <div className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span className="text-slate-500">Officer:</span>
+              <span className="font-semibold text-slate-900">{user?.name || "Drawee Verifier"}</span>
+              <span className="text-[10px] font-mono font-bold bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-200 uppercase">
+                {user?.email === "checker@hdb.com" ? "Senior Approver (Checker)" : "Verifier (Maker)"}
               </span>
             </div>
 
-            <div className="px-3 py-1.5 rounded-xl bg-blue-50/60 border border-blue-200 text-xs font-bold text-blue-800 flex items-center gap-1.5">
-              <span>⚡</span>
-              <span>e-Kuber Continuous T+0 Active</span>
+            <div className="px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-xs font-medium text-blue-800">
+              e-Kuber T+0 Active
             </div>
           </div>
         </div>
 
-        {/* 5 Executive KPI Stat Cards */}
+        {/* 4-Eyes Governance Operational Banner */}
+        {user?.email === "drawee@hdb.com" ? (
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div>
+              <span className="font-bold text-indigo-950">Maker Mode (Initial Scrutiny):</span>
+              <span className="text-indigo-800 ml-1">
+                Verify cheque security and drawer signatures. Instruments exceeding ₹1,00,000 or with fraud risk route to the Senior Checker under Four-Eyes governance.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => client.post("/auth/login", { email: "checker@hdb.com", password: "password123" }).then(res => { localStorage.setItem("cts_token", res.data.token); localStorage.setItem("cts_user", JSON.stringify(res.data.user)); window.location.reload(); })}
+              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-colors cursor-pointer"
+            >
+              Switch to Checker Mode →
+            </button>
+          </div>
+        ) : user?.email === "checker@hdb.com" ? (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div>
+              <span className="font-bold text-amber-950">Senior Approver Mode (Checker):</span>
+              <span className="text-amber-800 ml-1">
+                Dual authorization authority. Review instruments awaiting senior approval to grant clearance or generate return memos.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => client.post("/auth/login", { email: "drawee@hdb.com", password: "password123" }).then(res => { localStorage.setItem("cts_token", res.data.token); localStorage.setItem("cts_user", JSON.stringify(res.data.user)); window.location.reload(); })}
+              className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold transition-colors cursor-pointer"
+            >
+              Switch to Maker Mode →
+            </button>
+          </div>
+        ) : null}
+
+        {/* 5 KPI Stat Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <StatCard
             label="Action Required"
             value={metrics.actionNeededCount}
             subtext="Needs Verification"
             color="text-amber-600"
-            icon="⚡"
-            pulse={metrics.actionNeededCount > 0}
           />
           <StatCard
             label="Awaiting Checker"
             value={metrics.awaitingCheckerCount}
-            subtext="4-Eyes Dual Sign-Off"
+            subtext="Four-Eyes Dual Sign-Off"
             color="text-purple-600"
-            icon="🛡️"
-            pulse={metrics.awaitingCheckerCount > 0}
           />
           <StatCard
-            label="Real-Time Settled"
+            label="Settled"
             value={metrics.clearedCount}
             subtext="e-Kuber UTR Assigned"
             color="text-emerald-600"
-            icon="🏛️"
           />
           <StatCard
-            label="Returned / Dishonoured"
+            label="Returned"
             value={metrics.returnedCount}
-            subtext="Section 138 Memos"
+            subtext="Dishonour Memos"
             color="text-rose-600"
-            icon="❌"
           />
           <StatCard
-            label="Inward Exposure"
+            label="Pending Exposure"
             value={`₹${(metrics.pendingExposure / 100000).toFixed(2)}L`}
             subtext="Pending Clearing INR"
-            color="text-gray-900"
-            icon="💰"
+            color="text-slate-900"
           />
         </div>
 
-        {/* Smart Workflow Toolbar & Filter Deck */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        {/* Filter Toolbar */}
+        <div className="bg-white rounded-xl p-3 border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3">
           {/* Filter Tabs */}
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => setActiveTab("action_needed")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "action_needed"
-                  ? "bg-amber-600 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-amber-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              <span>⚡ Action Needed</span>
+              <span>Action Needed</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                activeTab === "action_needed" ? "bg-amber-800 text-white" : "bg-gray-200 text-gray-700"
+                activeTab === "action_needed" ? "bg-amber-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {metrics.actionNeededCount}
               </span>
@@ -212,15 +231,15 @@ export default function DraweeBankDashboard() {
             <button
               type="button"
               onClick={() => setActiveTab("awaiting_checker")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "awaiting_checker"
-                  ? "bg-purple-600 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-purple-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              <span>🛡️ Awaiting Checker</span>
+              <span>Awaiting Checker</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                activeTab === "awaiting_checker" ? "bg-purple-800 text-white" : "bg-gray-200 text-gray-700"
+                activeTab === "awaiting_checker" ? "bg-purple-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {metrics.awaitingCheckerCount}
               </span>
@@ -229,15 +248,15 @@ export default function DraweeBankDashboard() {
             <button
               type="button"
               onClick={() => setActiveTab("all")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "all"
-                  ? "bg-gray-900 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              <span>📋 All Inward</span>
+              <span>All Inward</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                activeTab === "all" ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-700"
+                activeTab === "all" ? "bg-slate-700 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {metrics.total}
               </span>
@@ -246,15 +265,15 @@ export default function DraweeBankDashboard() {
             <button
               type="button"
               onClick={() => setActiveTab("cleared")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "cleared"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-emerald-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              <span>✅ Cleared / Settled</span>
+              <span>Cleared</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                activeTab === "cleared" ? "bg-emerald-800 text-white" : "bg-gray-200 text-gray-700"
+                activeTab === "cleared" ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {metrics.clearedCount}
               </span>
@@ -263,70 +282,70 @@ export default function DraweeBankDashboard() {
             <button
               type="button"
               onClick={() => setActiveTab("returned")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "returned"
-                  ? "bg-rose-600 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-rose-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              <span>❌ Returned</span>
+              <span>Returned</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                activeTab === "returned" ? "bg-rose-800 text-white" : "bg-gray-200 text-gray-700"
+                activeTab === "returned" ? "bg-rose-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
                 {metrics.returnedCount}
               </span>
             </button>
           </div>
 
-          {/* Search Input & View Switcher */}
+          {/* Search Input & View Mode */}
           <div className="flex items-center gap-2">
-            <div className="relative min-w-[220px]">
+            <div className="relative min-w-[200px]">
               <input
                 type="text"
-                placeholder="Search Cheque #, Payee, Amount..."
+                placeholder="Search Cheque #, Payee..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 pl-8"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-purple-500 pl-8"
               />
-              <span className="absolute left-2.5 top-2 text-gray-400 text-xs">🔍</span>
+              <svg className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1.5 text-gray-400 hover:text-gray-600 text-xs cursor-pointer"
+                  className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
-                  ✕
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               )}
             </div>
 
             {/* View Mode Switcher */}
-            <div className="bg-gray-100 p-1 rounded-xl flex items-center gap-1 border border-gray-200 text-xs">
+            <div className="bg-slate-100 p-0.5 rounded-lg flex items-center border border-slate-200 text-xs">
               <button
                 type="button"
                 onClick={() => setViewMode("cards")}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                   viewMode === "cards"
                     ? "bg-white text-purple-800 shadow-xs"
-                    : "text-gray-500 hover:text-gray-800"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
-                title="Cards Workbench: zero horizontal scrolling, direct 3-button action deck"
               >
-                <span>🗂️</span>
-                <span>Cards View</span>
+                Cards
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("table")}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                   viewMode === "table"
                     ? "bg-white text-purple-800 shadow-xs"
-                    : "text-gray-500 hover:text-gray-800"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
-                title="Table Queue: traditional grid with sticky action column"
               >
-                <span>📊</span>
-                <span>Table View</span>
+                Table
               </button>
             </div>
           </div>
@@ -340,13 +359,15 @@ export default function DraweeBankDashboard() {
           </div>
         ) : filteredCheques.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-gray-200/80 shadow-xs space-y-3">
-            <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mx-auto">
-              ✓
+            <div className="w-14 h-14 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
             </div>
             <h3 className="text-base font-bold text-gray-900">No Instruments in this Queue</h3>
             <p className="text-xs text-gray-500 max-w-md mx-auto">
               {activeTab === "action_needed"
-                ? "All presented inward instruments have been verified and processed. Great job!"
+                ? "All presented inward instruments have been verified and processed. Queue is clear."
                 : "No cheques found matching the selected filter or search criteria."}
             </p>
             {activeTab !== "all" && (
@@ -379,12 +400,6 @@ export default function DraweeBankDashboard() {
         ) : (
           /* Table Queue with Sticky Right Action Column */
           <div className="space-y-2">
-            <div className="text-xs text-gray-500 flex items-center gap-1.5 px-1">
-              <span>💡</span>
-              <span>
-                <strong>Table View Notice:</strong> The Verification Action column is pinned (sticky) to the right edge with a solid backdrop so the 3 options are always visible on screen without scrolling.
-              </span>
-            </div>
             <ClearingStatusTable
               cheques={filteredCheques}
               onUpdated={() => load()}

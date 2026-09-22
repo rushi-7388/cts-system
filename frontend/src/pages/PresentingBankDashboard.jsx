@@ -11,8 +11,12 @@ export default function PresentingBankDashboard() {
   const [activeTab, setActiveTab] = useState("batch"); // "batch" or "single"
 
   async function load() {
-    const { data } = await client.get("/cheques");
-    setCheques(data);
+    try {
+      const { data } = await client.get("/cheques");
+      setCheques(data);
+    } catch (err) {
+      console.error("Failed to load cheques:", err);
+    }
   }
 
   useEffect(() => {
@@ -24,37 +28,32 @@ export default function PresentingBankDashboard() {
   });
 
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50/50 pb-16">
       <Navbar />
-      <div className="max-w-5xl mx-auto p-6 space-y-6">
-        {/* Tab Switcher: Single Cheque Capture vs High-Speed Branch Batch Scanner */}
-        <div className="flex border-b border-gray-200">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Tab Switcher */}
+        <div className="flex border-b border-slate-200 gap-2">
           <button
             type="button"
             onClick={() => setActiveTab("batch")}
-            className={`pb-3 px-4 font-bold text-xs transition-colors border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3.5 px-6 font-semibold text-sm transition-all border-b-2 cursor-pointer whitespace-nowrap ${
               activeTab === "batch"
-                ? "border-brand-600 text-brand-700 bg-brand-50/40 rounded-t-lg"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-brand-600 text-brand-700 bg-brand-50/60 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
             }`}
           >
-            <span>⚡</span>
-            <span>High-Throughput Branch Batch Scanner (ZIP / CSV)</span>
-            <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-mono">
-              300 DPM
-            </span>
+            Batch Ingestion (CSV)
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("single")}
-            className={`pb-3 px-4 font-bold text-xs transition-colors border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3.5 px-6 font-semibold text-sm transition-all border-b-2 cursor-pointer whitespace-nowrap ${
               activeTab === "single"
-                ? "border-brand-600 text-brand-700 bg-brand-50/40 rounded-t-lg"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-brand-600 text-brand-700 bg-brand-50/60 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
             }`}
           >
-            <span>📄</span>
-            <span>Single Cheque Capture & AI OCR</span>
+            Single Instrument Presentation
           </button>
         </div>
 
@@ -66,10 +65,12 @@ export default function PresentingBankDashboard() {
         )}
 
         {/* Clearing Status Table */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold text-lg text-gray-900">Cheques Presented in Clearing</h2>
-            <span className="text-xs font-mono text-gray-500">
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-bold text-xl text-slate-900 tracking-tight">
+              Cheques Presented in Clearing
+            </h2>
+            <span className="text-xs font-mono font-semibold text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-2xs">
               Total Presented: {cheques.length} instruments
             </span>
           </div>

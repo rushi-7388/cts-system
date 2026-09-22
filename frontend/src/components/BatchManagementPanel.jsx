@@ -101,15 +101,15 @@ export default function BatchManagementPanel() {
       ) : batches.length === 0 ? (
         <div className="text-xs text-gray-400 text-center py-6">No clearing sessions created yet.</div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border border-gray-200 rounded-xl">
           <table className="w-full text-left text-xs">
-            <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider text-[10px]">
+            <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider text-[10px] border-b">
               <tr>
                 <th className="py-2.5 px-3">Session Code</th>
                 <th className="py-2.5 px-3">Session Name</th>
                 <th className="py-2.5 px-3">Status</th>
                 <th className="py-2.5 px-3">Cheques Count</th>
-                <th className="py-2.5 px-3">Total Volume (₹)</th>
+                <th className="py-2.5 px-3 text-right">Total Volume</th>
                 <th className="py-2.5 px-3">Created</th>
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
@@ -135,8 +135,8 @@ export default function BatchManagementPanel() {
                   <td className="py-3 px-3 font-mono text-gray-600">
                     {b._count?.cheques ?? b.totalCount} cheque(s)
                   </td>
-                  <td className="py-3 px-3 font-mono text-gray-900 font-semibold">
-                    ₹{Number(b.totalAmount || 0).toLocaleString()}
+                  <td className="py-3 px-3 font-mono text-gray-900 font-semibold text-right">
+                    ₹{Number(b.totalAmount || 0).toLocaleString("en-IN")}
                   </td>
                   <td className="py-3 px-3 text-gray-400 text-[11px]">
                     {new Date(b.createdAt).toLocaleDateString()}

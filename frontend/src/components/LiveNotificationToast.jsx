@@ -11,19 +11,27 @@ export default function LiveNotificationToast() {
 
     if (event.type === "PRESENTED") {
       title = "New Cheque Presented";
-      message = `Cheque #${event.data.chequeNumber} (₹${Number(event.data.amount).toLocaleString("en-IN")}) presented by ${event.data.presentingBank}`;
+      message = `Cheque #${event.data?.chequeNumber} (₹${Number(event.data?.amount || 0).toLocaleString("en-IN")}) presented by ${event.data?.presentingBank || "Presenting Bank"}`;
       type = "presentation";
+    } else if (event.type === "AWAITING_CHECKER") {
+      title = "4-Eyes Sign-Off Required";
+      message = `Cheque #${event.data?.chequeNumber} forwarded to Senior Approver (Checker) under 4-Eyes governance.`;
+      type = "warning";
+    } else if (event.type === "VERIFIED") {
+      title = "Cheque Verified";
+      message = `Cheque #${event.data?.chequeNumber} passed initial verification by Drawee Maker.`;
+      type = "info";
     } else if (event.type === "CLEARED") {
       title = "Cheque Cleared";
-      message = `Cheque #${event.data.chequeNumber} cleared successfully. Ready for settlement.`;
+      message = `Cheque #${event.data?.chequeNumber} cleared successfully. Ready for e-Kuber settlement.`;
       type = "success";
     } else if (event.type === "RETURNED") {
-      title = "Cheque Returned";
-      message = `Cheque #${event.data.chequeNumber} returned: ${event.data.returnReason}`;
+      title = "Cheque Dishonoured / Returned";
+      message = `Cheque #${event.data?.chequeNumber} returned: ${event.data?.returnReason || "Dishonoured"}`;
       type = "danger";
     } else if (event.type === "SETTLEMENT") {
       title = "Net Settlement Executed";
-      message = event.data.message;
+      message = event.data?.message || "Continuous Clearing Batch Settled via RBI e-Kuber";
       type = "success";
     }
 
@@ -37,10 +45,11 @@ export default function LiveNotificationToast() {
   if (!notification) return null;
 
   const bgColors = {
-    presentation: "bg-brand-900 border-brand-700 text-white",
-    success: "bg-emerald-900 border-emerald-700 text-white",
-    danger: "bg-rose-900 border-rose-700 text-white",
-    info: "bg-gray-900 border-gray-700 text-white",
+    presentation: "bg-brand-950/95 border-brand-700 text-white",
+    success: "bg-emerald-950/95 border-emerald-700 text-white",
+    danger: "bg-rose-950/95 border-rose-700 text-white",
+    warning: "bg-amber-950/95 border-amber-700 text-amber-100",
+    info: "bg-slate-900/95 border-slate-700 text-white",
   };
 
   return (

@@ -13,10 +13,17 @@ client.interceptors.request.use((config) => {
 client.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    // Only redirect to login if token is expired/invalid on protected endpoints,
+    // not during actual login requests or when already on the login page
+    const isLoginEndpoint = err.config?.url?.includes("/auth/login");
+    const isAlreadyOnLoginPage = window.location.pathname === "/login";
+
+    if (err.response?.status === 401 && !isLoginEndpoint) {
       localStorage.removeItem("cts_token");
       localStorage.removeItem("cts_user");
-      window.location.href = "/login";
+      if (!isAlreadyOnLoginPage) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(err);
   }

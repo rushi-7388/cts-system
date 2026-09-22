@@ -15,6 +15,14 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
       .finally(() => setLoading(false));
   }, [chequeId]);
 
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose?.();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   function handlePrint() {
     window.print();
   }
@@ -22,8 +30,14 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
   if (!chequeId) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[95vh] flex flex-col overflow-hidden border border-gray-200">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[95vh] flex flex-col overflow-hidden border border-gray-200"
+      >
         {/* Modal Controls (Hidden during Print) */}
         <div className="px-6 py-3 border-b flex items-center justify-between bg-rose-50/50 print:hidden">
           <div className="flex items-center gap-2">

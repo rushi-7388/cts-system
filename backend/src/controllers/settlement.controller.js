@@ -1,6 +1,7 @@
 const prisma = require("../config/prisma");
 const { generatePacs008Xml } = require("../utils/iso20022.util");
 const { broadcastEvent } = require("../utils/sse.util");
+const { settlementCyclesTotal } = require("../utils/metrics.util");
 
 // Runs a net settlement over all CLEARED cheques
 async function runSettlement(req, res) {
@@ -37,6 +38,7 @@ async function runSettlement(req, res) {
   }
 
   // Broadcast real-time SSE notification
+  settlementCyclesTotal.inc({ mode: "MULTILATERAL_NET", status: "SUCCESS" });
   broadcastEvent("SETTLEMENT_RUN", {
     message: `Settlement cycle executed: ${results.length} net position(s) settled.`,
     settlementsCount: results.length,
@@ -172,7 +174,7 @@ async function getLiquidityMonitor(req, res) {
       };
     });
 
-    // Bilateral netting summary between Surat Local Bank and Horizon Digital Bank
+    // Bilateral netting summary between Surat Bank and Horizon Digital Bank
     const bankA = banks.find((b) => b.ifsc === "SBIN0001234") || banks[0];
     const bankB = banks.find((b) => b.ifsc === "HDFC0005678") || banks[1];
 

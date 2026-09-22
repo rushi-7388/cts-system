@@ -1,4 +1,4 @@
-# 🏦 CTS — Enterprise Cheque Truncation & SRE Clearing Platform
+# CTS — Enterprise Cheque Truncation & SRE Clearing Platform
 
 [![CI/CD Pipeline](https://github.com/rushi-7388/cts-system/actions/workflows/ci.yml/badge.svg)](https://github.com/rushi-7388/cts-system/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -19,25 +19,25 @@ The platform integrates enterprise banking governance (**Maker-Checker 4-Eyes Pr
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [System Architecture](#-system-architecture)
-- [Unique Enterprise & Fintech Features](#-unique-enterprise--fintech-features)
-- [SRE, DevOps & Cloud-Native Observability](#-sre-devops--cloud-native-observability)
-- [Tech Stack](#-tech-stack)
-- [Quick Start with Docker Compose](#-quick-start-with-docker-compose)
-- [Local Development Setup (Non-Docker)](#-local-development-setup-non-docker)
-- [Demo Accounts & Test Credentials](#-demo-accounts--test-credentials)
-- [Interactive Testing & Evaluation Scenarios](#-interactive-testing--evaluation-scenarios)
-- [API Reference & Real-Time Endpoints](#-api-reference--real-time-endpoints)
-- [Database Reliability & DevOps Toolkit](#-database-reliability--devops-toolkit)
-- [Kubernetes Production Deployment](#-kubernetes-production-deployment)
-- [Project Directory Layout](#-project-directory-layout)
-- [License](#-license)
+- [System Architecture](#system-architecture)
+- [Unique Enterprise & Fintech Features](#unique-enterprise--fintech-features)
+- [SRE, DevOps & Cloud-Native Observability](#sre-devops--cloud-native-observability)
+- [Tech Stack](#tech-stack)
+- [Quick Start with Docker Compose](#quick-start-with-docker-compose)
+- [Local Development Setup (Non-Docker)](#local-development-setup-non-docker)
+- [Demo Accounts & Test Credentials](#demo-accounts--test-credentials)
+- [Interactive Testing & Evaluation Scenarios](#interactive-testing--evaluation-scenarios)
+- [API Reference & Real-Time Endpoints](#api-reference--real-time-endpoints)
+- [Database Reliability & DevOps Toolkit](#database-reliability--devops-toolkit)
+- [Kubernetes Production Deployment](#kubernetes-production-deployment)
+- [Project Directory Layout](#project-directory-layout)
+- [License](#license)
 
 ---
 
-## 🏛 System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TB
@@ -90,7 +90,7 @@ flowchart TB
 
 ---
 
-## 💎 Unique Enterprise & Fintech Features
+## Unique Enterprise & Fintech Features
 
 ### 1. AI / Optical Character Recognition (OCR) Cheque Extraction
 - Automatically parses cheque images to extract the **6-digit Cheque Number**, **9-digit MICR Code**, **Bank Account Number**, **IFSC**, and **Transaction Code**.
@@ -134,7 +134,7 @@ flowchart TB
 
 ---
 
-## ⚡ SRE, DevOps & Cloud-Native Observability
+## SRE, DevOps & Cloud-Native Observability
 
 ### 1. Live SRE & SLO Observability Console
 - Integrated directly into the System Admin dashboard.
@@ -161,7 +161,7 @@ flowchart TB
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Domain | Technology | Description |
 |---|---|---|
@@ -178,7 +178,7 @@ flowchart TB
 
 ---
 
-## 🚀 Quick Start with Docker Compose
+## Quick Start with Docker Compose
 
 The fastest way to spin up the complete end-to-end CTS ecosystem (PostgreSQL, Backend API, Frontend Web App, Prometheus, and Grafana):
 
@@ -191,7 +191,7 @@ cd cts-system
 docker compose up --build
 ```
 
-### 🌐 Service Endpoints
+### Service Endpoints
 
 | Service | URL | Default Credentials | Description |
 |---|---|---|---|
@@ -205,7 +205,7 @@ docker compose up --build
 
 ---
 
-## 💻 Local Development Setup (Non-Docker)
+## Local Development Setup (Non-Docker)
 
 If you prefer running the backend and frontend locally on your machine:
 
@@ -255,18 +255,22 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 🔑 Demo Accounts & Test Credentials
+## Demo Accounts & Test Credentials
 
 All pre-seeded demo accounts share the password: **`password123`**
 
-| Role | Email | Bank Organization | IFSC Code | Access & Responsibilities |
+| Role | Email | Bank Organization | Portal Path | Access & Responsibilities |
 |---|---|---|---|---|
-| **Presenting Bank** | `presenting@snb.com` | Surat Local Bank (SNB) | `SBIN0001234` | Cheque scanning, OCR auto-fill, presentation, positive pay checking |
-| **Drawee Bank (Maker)** | `drawee@hdb.com` | Horizon Digital Bank (HDB) | `HDFC0005678` | Inward clearing queue, UV blacklight inspection, initial verification |
-| **Drawee Bank (Checker)**| `checker@hdb.com` | Horizon Digital Bank (HDB) | `HDFC0005678` | **Maker-Checker 4-Eyes** secondary sign-off on high-value/high-risk items |
-| **System Administrator**| `admin@cts.com` | National Clearing House | `CTS0000001` | SRE Console, Chaos Simulator, Batch cycles, Settlement, ISO 20022 |
+| **Presenting Bank Clerk** | `presenting@snb.com` | Surat Bank (SNB) | `/presenting` | Cheque scanning, OCR auto-fill, presentation, positive pay checking |
+| **Drawee Bank (Maker)** | `drawee@hdb.com` | Horizon Digital Bank (HDB) | `/drawee` | Inward clearing queue, UV blacklight inspection, initial verification |
+| **Drawee Bank (Checker)**| `checker@hdb.com` | Horizon Digital Bank (HDB) | `/drawee` | **Maker-Checker 4-Eyes** secondary sign-off on high-value/high-risk items |
+| **Clearing House Admin**| `admin@cts.com` | National Clearing House | `/admin` | Universal system oversight, SRE Console, Chaos Simulator, ISO 20022 |
+| **Branch Operations Manager**| `manager@snb.com` | Surat Bank (Athwa Branch) | `/branch-manager` | Branch batch oversight, high-value counter-signature (>₹50,000), batch dispatch |
+| **Core SRE & IT Staff**| `itops@cts.com` | CTS Core Switch Infrastructure | `/it-monitoring` | Core switch telemetry, Prometheus scraper, Chaos Engineering, database health |
+| **Compliance & Audit Officer**| `auditor@rbi.org.in` | Regulatory Oversight Wing (RBI) | `/auditor` | Cryptographic SHA-256 ledger integrity verification, Positive Pay & fraud audit |
+| **Settlement & Treasury Officer**| `treasury@cts.com` | National Treasury Settlement Desk | `/settlement` | Multilateral Net Settlement (MNS) grid & RBI e-Kuber continuous T+0 clearing |
 
-### 📋 Pre-Registered Positive Pay Records (For Testing)
+### Pre-Registered Positive Pay Records (For Testing)
 
 | Account Number | Cheque Number | Payee Name | Pre-Authorized Amount | Scenario |
 |---|---|---|---|---|
@@ -276,7 +280,7 @@ All pre-seeded demo accounts share the password: **`password123`**
 
 ---
 
-## 🧪 Interactive Testing & Evaluation Scenarios
+## Interactive Testing & Evaluation Scenarios
 
 ### Scenario 1: Cheque Presentation with OCR & Positive Pay
 1. Log in as `presenting@snb.com`.
@@ -311,7 +315,7 @@ All pre-seeded demo accounts share the password: **`password123`**
 3. The system confirms `100% Chain Integrity Verified`.
 
 ### Scenario 5: SRE Console & Chaos Fault Injection
-1. As `admin@cts.com`, navigate to the **⚡ DevOps & SRE Console** tab.
+1. As `admin@cts.com`, navigate to the **DevOps & SRE** tab.
 2. Inspect the **99.9% SLO Availability Target**, **Error Budget Remaining**, and **P95 Latency**.
 3. Under **Chaos Engineering**, click **"Inject +1200ms DB Lag"**.
 4. Click **"Send Live Probe"** and watch the latency gauge spike to ~1250ms.
@@ -320,7 +324,7 @@ All pre-seeded demo accounts share the password: **`password123`**
 
 ---
 
-## 📡 API Reference & Real-Time Endpoints
+## API Reference & Real-Time Endpoints
 
 ### Authentication & User Management
 - `POST /api/auth/login` — Authenticate and receive JWT access token.
@@ -350,7 +354,7 @@ All pre-seeded demo accounts share the password: **`password123`**
 
 ---
 
-## 🧰 Database Reliability & DevOps Toolkit
+## Database Reliability & DevOps Toolkit
 
 Automated management scripts are located in [`scripts/`](file:///d:/cts-system/scripts):
 
@@ -373,7 +377,7 @@ node scripts/db-health.js
 
 ---
 
-## ☸️ Kubernetes Production Deployment
+## Kubernetes Production Deployment
 
 The [`k8s/`](file:///d:/cts-system/k8s) directory contains declarative production manifests:
 
@@ -393,7 +397,7 @@ kubectl get hpa -n cts-system
 
 ---
 
-## 📂 Project Directory Layout
+## Project Directory Layout
 
 ```
 cts-system/
@@ -448,6 +452,6 @@ cts-system/
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE) — free for educational, institutional, and commercial demonstration purposes.

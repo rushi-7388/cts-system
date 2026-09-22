@@ -26,6 +26,14 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
     fetchAdvice();
   }, [chequeId]);
 
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose?.();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   function handleCopy() {
     navigator.clipboard.writeText(xmlContent);
     setCopied(true);
@@ -45,12 +53,17 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]"
+      >
         {/* Modal Header */}
         <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="p-2 rounded-xl bg-blue-600/30 text-blue-400 text-lg">🏛️</span>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-sm">Reserve Bank of India — e-Kuber Settlement Advice</h3>
@@ -67,7 +80,9 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
             onClick={onClose}
             className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            ✕
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -81,7 +96,7 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
                 : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            📄 Formal e-Kuber Settlement Advice
+            Settlement Advice
           </button>
           <button
             onClick={() => setActiveTab("xml")}
@@ -91,31 +106,25 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
                 : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            <span>XML</span>
-            <span>pacs.009 Raw Payload</span>
+            ISO 20022 pacs.009 XML
           </button>
         </div>
 
-        {/* Modal Content */}
-        <div className="p-6 overflow-y-auto space-y-4 flex-1">
+        {/* Modal Body */}
+        <div className="p-6 overflow-y-auto max-h-[75vh]">
           {loading ? (
-            <div className="text-center py-12 text-gray-500 text-xs flex flex-col items-center gap-2">
-              <svg className="animate-spin h-6 w-6 text-brand-600" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
+            <div className="flex items-center justify-center p-12 text-xs text-gray-500 gap-2">
+              <svg className="animate-spin h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
               </svg>
               <span>Generating Central Bank e-Kuber Settlement Digest...</span>
             </div>
           ) : activeTab === "advice" ? (
             /* Formal Certificate View */
-            <div className="border-4 border-double border-gray-300 p-6 rounded-xl bg-slate-50/50 space-y-5">
-              {/* Seal and Insignia Header */}
+            <div className="border border-slate-300 p-6 rounded-xl bg-slate-50/50 space-y-5">
+              {/* Insignia Header */}
               <div className="text-center border-b border-gray-200 pb-4 space-y-1">
-                <span className="text-2xl">🏛️</span>
                 <h4 className="font-extrabold text-sm uppercase tracking-widest text-gray-900">
                   RESERVE BANK OF INDIA
                 </h4>
@@ -196,19 +205,16 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
                 <div className="flex justify-between items-center pt-1">
                   <span className="text-gray-600 font-semibold">Beneficiary Customer Credit:</span>
                   <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                    DISPATCHED (T+0 FAST-PATH) ✓
+                    DISPATCHED (T+0 FAST-PATH)
                   </span>
                 </div>
               </div>
 
               {/* Regulatory Mandate Footnote */}
-              <div className="text-[10px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3 flex items-start gap-2">
-                <span>⚖️</span>
-                <span>
-                  This advice constitutes statutory proof of central bank interbank fund realization under the
-                  Reserve Bank of India Continuous Clearing & On-Realisation Settlement Directive. Funds credited
-                  to the presenting bank are irrevocable and final under the Payment and Settlement Systems Act, 2007.
-                </span>
+              <div className="text-[10px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
+                This advice constitutes proof of interbank fund realization under the
+                Reserve Bank of India Continuous Clearing & On-Realisation Settlement Directive. Funds credited
+                to the presenting bank are final under the Payment and Settlement Systems Act, 2007.
               </div>
             </div>
           ) : (
@@ -223,7 +229,7 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
                     onClick={handleCopy}
                     className="px-2.5 py-1 text-xs font-bold rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors cursor-pointer"
                   >
-                    {copied ? "Copied! ✓" : "Copy XML"}
+                    {copied ? "Copied" : "Copy XML"}
                   </button>
                   <button
                     onClick={handleDownload}

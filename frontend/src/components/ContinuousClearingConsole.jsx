@@ -73,8 +73,8 @@ export default function ContinuousClearingConsole() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-100 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-mono font-bold">
-              ⚡ CTS 3.0 ENGINE
+            <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-xs font-mono font-semibold">
+              CLEARING ENGINE
             </span>
             <h2 className="font-bold text-base text-gray-900">
               RBI Continuous Clearing & e-Kuber Real-Time Settlement Console
@@ -174,8 +174,8 @@ export default function ContinuousClearingConsole() {
         {/* SRE Observability Telemetry Hub Card */}
         <div className="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-indigo-950 flex items-center gap-1">
-              <span>📊</span> SRE Monitoring Stack
+            <span className="font-bold text-indigo-950">
+              SRE Monitoring Stack
             </span>
             <span className="px-2 py-0.5 rounded bg-indigo-200 text-indigo-900 text-[10px] font-bold font-mono">
               Prometheus + Grafana
@@ -191,7 +191,7 @@ export default function ContinuousClearingConsole() {
               rel="noopener noreferrer"
               className="flex-1 text-center py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition-colors shadow-2xs"
             >
-              📈 Grafana (Port 3001)
+              Grafana (Port 3001)
             </a>
             <a
               href="http://localhost:9090"
@@ -199,7 +199,7 @@ export default function ContinuousClearingConsole() {
               rel="noopener noreferrer"
               className="flex-1 text-center py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-[11px] transition-colors shadow-2xs"
             >
-              📊 Prometheus (Port 9090)
+              Prometheus (Port 9090)
             </a>
           </div>
         </div>
@@ -213,9 +213,9 @@ export default function ContinuousClearingConsole() {
           </h3>
           <button
             onClick={loadStatus}
-            className="text-[11px] font-semibold text-brand-600 hover:text-brand-700 cursor-pointer flex items-center gap-1"
+            className="text-[11px] font-semibold text-brand-600 hover:text-brand-700 cursor-pointer"
           >
-            <span>🔄</span> Refresh Stream
+            Refresh Stream
           </button>
         </div>
 
@@ -262,7 +262,10 @@ export default function ContinuousClearingConsole() {
                     </td>
                     <td className="px-3 py-2.5">
                       <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center gap-1 w-fit">
-                        <span>✓</span> T+0 CREDITED
+                        <svg className="w-3 h-3 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>T+0 CREDITED</span>
                       </span>
                     </td>
                     <td className="px-3 py-2.5 text-right">
@@ -287,10 +290,10 @@ export default function ContinuousClearingConsole() {
         <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-3">
           <div className="flex items-center justify-between">
             <span className="font-bold text-xs text-amber-900">
-              ⏳ Cleared Instruments Awaiting e-Kuber Settlement ({statusData.pendingCheques.length})
+              Cleared Instruments Awaiting e-Kuber Settlement ({statusData.pendingCheques.length})
             </span>
             <span className="text-[10px] font-mono text-amber-800">
-              Legacy batch holdover or manual settlement required
+              Awaiting batch settlement cut-off
             </span>
           </div>
 
@@ -315,7 +318,7 @@ export default function ContinuousClearingConsole() {
                   onClick={() => handleSettleNow(c.id)}
                   className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  {settlingChequeId === c.id ? "Settling..." : "⚡ Settle via e-Kuber Now (T+0)"}
+                  {settlingChequeId === c.id ? "Settling..." : "Settle via e-Kuber (T+0)"}
                 </button>
               </div>
             ))}

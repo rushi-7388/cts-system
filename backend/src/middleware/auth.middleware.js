@@ -18,7 +18,7 @@ function authenticate(req, res, next) {
 
 function authorize(...allowedRoles) {
   return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
+    if (!req.user || (!allowedRoles.includes(req.user.role) && req.user.role !== "ADMIN")) {
       return res.status(403).json({ error: "Forbidden: insufficient role" });
     }
     next();

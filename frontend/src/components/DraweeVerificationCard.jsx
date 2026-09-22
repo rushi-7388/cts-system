@@ -23,26 +23,54 @@ export default function DraweeVerificationCard({
             {cheque.batch?.sessionCode || "BATCH-OPEN"}
           </span>
           <span
-            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-              cheque.status === "PRESENTED"
+            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${cheque.status === "PRESENTED"
                 ? "bg-yellow-50 text-yellow-800 border border-yellow-200"
                 : cheque.status === "VERIFIED"
-                ? "bg-blue-50 text-blue-800 border border-blue-200"
-                : cheque.status === "AWAITING_CHECKER"
-                ? "bg-purple-50 text-purple-800 border border-purple-200 animate-pulse"
-                : cheque.status === "CLEARED"
-                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                : "bg-rose-50 text-rose-800 border border-rose-200"
-            }`}
+                  ? "bg-blue-50 text-blue-800 border border-blue-200"
+                  : cheque.status === "AWAITING_CHECKER"
+                    ? "bg-purple-50 text-purple-800 border border-purple-200 animate-pulse"
+                    : cheque.status === "CLEARED"
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      : "bg-rose-50 text-rose-800 border border-rose-200"
+              }`}
           >
             {cheque.status}
           </span>
         </div>
 
         <div className="text-[11px] text-gray-500 flex items-center gap-1.5">
-          <span className="font-semibold text-gray-700">{cheque.presentingBank?.name || "Surat Local Bank"}</span>
+          <span className="font-semibold text-gray-700">{cheque.presentingBank?.name || "Surat Bank"}</span>
           <span>→</span>
           <span className="text-gray-400 font-mono text-[10px]">{cheque.draweeBank?.ifsc || "HDFC0005678"}</span>
+        </div>
+      </div>
+
+      {/* Scanned Cheque Instrument Banner */}
+      <div
+        onClick={() => onInspect(cheque)}
+        className="relative h-32 bg-slate-900 overflow-hidden cursor-pointer group border-b border-gray-200"
+        title="Click to inspect high-resolution cheque scan and security features"
+      >
+        <img
+          src={cheque.imageUrl || (cheque.chequeNumber === "000102" ? "/cheque-000102.jpg" : cheque.chequeNumber === "000123" ? "/cheque-000123.jpg" : "/sample-cheque.jpg")}
+          alt={`Cheque #${cheque.chequeNumber}`}
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300 opacity-95 group-hover:opacity-100"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/sample-cheque.jpg";
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
+        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between pointer-events-none">
+          <span className="text-[10px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
+            MICR: {cheque.micrCode || "395024002"}
+          </span>
+          <span className="text-[10px] font-semibold text-white bg-brand-600/90 px-2 py-0.5 rounded flex items-center gap-1 backdrop-blur-xs group-hover:bg-brand-500 transition-colors">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Inspect UV / Scan
+          </span>
         </div>
       </div>
 
@@ -67,49 +95,50 @@ export default function DraweeVerificationCard({
         {/* 3 Core Assessment Badges (Positive Pay, AI Biometrics, Risk) */}
         <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-100 text-center">
           {/* 1. Positive Pay Status */}
-          <div className="bg-gray-50/80 p-2 rounded-xl border border-gray-100 flex flex-col items-center justify-center">
-            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Positive Pay (PPS)</div>
+          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
+            <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Positive Pay (PPS)</div>
             {cheque.ppsStatus === "PPS_VERIFIED" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                <span>🛡️</span> Confirmed
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>Confirmed</span>
               </span>
             ) : cheque.ppsStatus === "PPS_MISMATCH" ? (
               <span
-                className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 animate-pulse cursor-help"
+                className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 cursor-help"
                 title={JSON.stringify(cheque.ppsDiscrepancy || "Discrepancy detected")}
               >
-                <span>⚠️</span> Mismatch!
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                <span>Mismatch</span>
               </span>
             ) : Number(cheque.amount) >= 50000 ? (
-              <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+              <span className="text-[10px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                 Unregistered
               </span>
             ) : (
-              <span className="text-[10px] text-gray-400 font-mono">N/A (&lt;50K)</span>
+              <span className="text-[10px] text-slate-400 font-mono">N/A (&lt;50K)</span>
             )}
           </div>
 
           {/* 2. AI Specimen Signature Biometrics */}
-          <div className="bg-gray-50/80 p-2 rounded-xl border border-gray-100 flex flex-col items-center justify-center">
-            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">AI Signature Card</div>
+          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
+            <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Signature Match</div>
             {cheque.signatureMatchScore ? (
               <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                  cheque.signatureStatus === "SUSPECT_MISMATCH" || cheque.signatureMatchScore < 80
+                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${cheque.signatureStatus === "SUSPECT_MISMATCH" || cheque.signatureMatchScore < 80
                     ? "text-rose-700 bg-rose-50 border-rose-200"
                     : "text-blue-700 bg-blue-50 border-blue-200"
-                }`}
+                  }`}
               >
                 {cheque.signatureMatchScore}% Match
               </span>
             ) : (
-              <span className="text-[10px] text-gray-400 font-mono">300 DPI Matched</span>
+              <span className="text-[10px] text-slate-400 font-mono">Standard</span>
             )}
           </div>
 
           {/* 3. Risk Evaluation */}
-          <div className="bg-gray-50/80 p-2 rounded-xl border border-gray-100 flex flex-col items-center justify-center">
-            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Risk Score</div>
+          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
+            <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Risk Score</div>
             <RiskBadge
               tier={cheque.riskTier || "LOW"}
               score={cheque.riskScore || 0}
@@ -121,8 +150,8 @@ export default function DraweeVerificationCard({
         {/* e-Kuber UTR notification banner if settled */}
         {cheque.ekuberUtr && (
           <div className="p-2.5 rounded-xl bg-blue-50/80 border border-blue-200 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5 text-blue-900 font-mono text-[11px] font-bold">
-              <span>⚡ e-Kuber UTR:</span>
+            <div className="flex items-center gap-1.5 text-blue-900 font-mono text-[11px] font-semibold">
+              <span>e-Kuber UTR:</span>
               <span>{cheque.ekuberUtr}</span>
             </div>
             <button

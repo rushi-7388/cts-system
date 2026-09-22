@@ -13,6 +13,7 @@ const settlementRoutes = require("./routes/settlement.routes");
 const adminRoutes = require("./routes/admin.routes");
 const batchRoutes = require("./routes/batch.routes");
 const devopsRoutes = require("./routes/devops.routes");
+const branchRoutes = require("./routes/branch.routes");
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/api/clearing", clearingRoutes);
 app.use("/api/settlements", settlementRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/batches", batchRoutes);
+app.use("/api/branch", branchRoutes);
 
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 

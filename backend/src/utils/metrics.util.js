@@ -138,6 +138,35 @@ function recordRequest({ method, path, statusCode, durationMs }) {
   recordRequestMetrics(method, path, statusCode, durationMs);
 }
 
+// 6. Multi-Role Enterprise Operational Metrics
+const branchManagerOverridesTotal = new client.Counter({
+  name: "cts_branch_manager_overrides_total",
+  help: "Total high-value instruments counter-signed and approved by Branch Managers",
+  labelNames: ["branch", "action"],
+  registers: [register],
+});
+
+const auditVerificationsTotal = new client.Counter({
+  name: "cts_audit_verifications_total",
+  help: "Total cryptographic ledger verifications performed by Compliance Auditors",
+  labelNames: ["auditor", "status"],
+  registers: [register],
+});
+
+const settlementCyclesTotal = new client.Counter({
+  name: "cts_settlement_cycles_total",
+  help: "Total e-Kuber multilateral net settlement cycles executed by Settlement Officers",
+  labelNames: ["mode", "status"],
+  registers: [register],
+});
+
+const itChaosEventsTotal = new client.Counter({
+  name: "cts_it_chaos_events_total",
+  help: "Total chaos simulations injected or reset by IT Staff",
+  labelNames: ["type", "user"],
+  registers: [register],
+});
+
 module.exports = {
   register,
   getPrometheusMetrics,
@@ -152,4 +181,8 @@ module.exports = {
   settlementVolumeInrTotal,
   ppsVerificationTotal,
   liquidityUtilizationRatio,
+  branchManagerOverridesTotal,
+  auditVerificationsTotal,
+  settlementCyclesTotal,
+  itChaosEventsTotal,
 };

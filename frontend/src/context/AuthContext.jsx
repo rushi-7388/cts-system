@@ -23,8 +23,12 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  async function switchUser(email, password = "password123") {
+    return await login(email, password);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, switchUser }}>
       {children}
     </AuthContext.Provider>
   );

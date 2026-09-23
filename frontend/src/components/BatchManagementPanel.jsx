@@ -68,7 +68,7 @@ export default function BatchManagementPanel() {
         <div>
           <h2 className="text-lg font-bold text-gray-900">Clearing Batch Sessions</h2>
           <p className="text-xs text-gray-500">
-            Enterprise Clearing Session lifecycle: OPEN → LOCKED → RECONCILED → SETTLED
+            Clearing batch management and reconciliation sessions
           </p>
         </div>
 
@@ -161,11 +161,8 @@ export default function BatchManagementPanel() {
                       </button>
                     )}
                     {b.status === "RECONCILED" && (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-gray-500 font-medium">
-                        <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>Reconciled</span>
+                      <span className="text-[11px] text-emerald-700 font-semibold">
+                        Reconciled
                       </span>
                     )}
                   </td>

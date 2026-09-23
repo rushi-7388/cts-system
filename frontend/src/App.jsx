@@ -8,6 +8,7 @@ import BranchManagerDashboard from "./pages/BranchManagerDashboard";
 import ITStaffDashboard from "./pages/ITStaffDashboard";
 import ComplianceAuditorDashboard from "./pages/ComplianceAuditorDashboard";
 import SettlementOfficerDashboard from "./pages/SettlementOfficerDashboard";
+import RBACManagement from "./pages/RBACManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import LiveSettlementTicker from "./components/LiveSettlementTicker";
@@ -91,6 +92,14 @@ export default function App() {
             element={
               <ProtectedRoute roles={["SETTLEMENT_OFFICER", "ADMIN"]}>
                 <SettlementOfficerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rbac"
+            element={
+              <ProtectedRoute roles={["BRANCH_MANAGER", "ADMIN"]}>
+                <RBACManagement />
               </ProtectedRoute>
             }
           />

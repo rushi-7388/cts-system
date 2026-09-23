@@ -26,12 +26,11 @@ export default function RiskBadge({ score = 0, tier = "LOW", factors = [] }) {
       <button
         type="button"
         onClick={() => setShowModal(true)}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${pillColor}`}
-        title="Click to view algorithmic risk assessment breakdown"
+        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${pillColor}`}
+        title="View risk breakdown"
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
         <span>Risk: {Math.round(score)}/100</span>
-        <span className="font-semibold">({tier})</span>
+        <span className="font-semibold ml-1">({tier})</span>
       </button>
 
       {showModal && (
@@ -45,19 +44,14 @@ export default function RiskBadge({ score = 0, tier = "LOW", factors = [] }) {
           >
             <div className="flex items-center justify-between pb-3 border-b">
               <div>
-                <h3 className="font-bold text-gray-900 text-base">Algorithmic Risk Assessment</h3>
-                <p className="text-xs text-gray-500">CTS Dynamic Fraud Scoring Engine</p>
+                <h3 className="font-bold text-gray-900 text-base">Risk Assessment</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg flex items-center justify-center cursor-pointer"
-                title="Close"
-                aria-label="Close"
+                className="text-xs font-semibold text-gray-500 hover:text-gray-800 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition-colors cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                Close
               </button>
             </div>
 
@@ -88,10 +82,7 @@ export default function RiskBadge({ score = 0, tier = "LOW", factors = [] }) {
                   </div>
                 ))
               ) : (
-                <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 p-3 rounded text-center flex items-center justify-center gap-1.5">
-                  <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                  </svg>
+                <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 p-3 rounded text-center">
                   <span>No anomalous risk factors detected. Standard baseline parameters.</span>
                 </div>
               )}

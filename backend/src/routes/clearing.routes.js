@@ -8,6 +8,10 @@ router.use(authenticate);
 
 router.get("/return-reason-codes", getReturnReasonCodes);
 router.get("/:id/return-memo", getReturnMemo);
-router.patch("/:id/transition", authorize("DRAWEE_BANK", "ADMIN"), transitionCheque);
+router.patch(
+  "/:id/transition",
+  authorize("DRAWEE_BANK", "BRANCH_MANAGER", "SETTLEMENT_OFFICER", "PRESENTING_BANK", "ADMIN"),
+  transitionCheque
+);
 
 module.exports = router;

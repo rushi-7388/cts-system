@@ -98,32 +98,6 @@ export default function ChequeUploadForm({ onCreated }) {
     }
   }
 
-  function fillScenario(scenario) {
-    setError("");
-    if (scenario === 1) {
-      setChequeNumber("000123");
-      setIfsc("SBIN0001234");
-      setAccountNumber("123456789012");
-      setDraweeIfsc("HDFC0005678");
-      setPayeeName("Sample Payee");
-      setAmount("50000");
-    } else if (scenario === 2) {
-      setChequeNumber("450122");
-      setIfsc("SBIN0001234");
-      setAccountNumber("987654321098");
-      setDraweeIfsc("HDFC0005678");
-      setPayeeName("Acme Corp");
-      setAmount("150000");
-    } else if (scenario === 3) {
-      setChequeNumber("998877");
-      setIfsc("SBIN0001234");
-      setAccountNumber("555666777888");
-      setDraweeIfsc("HDFC0005678");
-      setPayeeName("Delta Logistics");
-      setAmount("75000");
-    }
-  }
-
   const previewChequeData = {
     chequeNumber: chequeNumber || "000123",
     ifsc: ifsc || "SBIN0001234",
@@ -149,54 +123,15 @@ export default function ChequeUploadForm({ onCreated }) {
         <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <h2 className="font-bold text-xl text-slate-900 tracking-tight">Present Cheque for Clearing</h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Enter MICR instrument details or load a pre-configured demo scenario for evaluation.
-            </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowPreviewModal(true)}
-              className="text-xs font-bold px-3.5 py-2 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs whitespace-nowrap"
+              className="text-xs font-bold px-3.5 py-2 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-all cursor-pointer shadow-2xs whitespace-nowrap"
             >
-              <svg className="w-4 h-4 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span>Security Inspector</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Fast Test Case Bar */}
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-            Sample Test Instruments:
-          </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => fillScenario(1)}
-              className="px-3.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs"
-              title="Pre-fills standard ₹50,000 cheque with Positive Pay MATCHED"
-            >
-              Case 1: Standard (₹50,000)
-            </button>
-            <button
-              type="button"
-              onClick={() => fillScenario(2)}
-              className="px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs"
-              title="Pre-fills ₹1,50,000 cheque triggering Maker-Checker 4-Eyes rule"
-            >
-              Case 2: High-Value (₹1,50,000)
-            </button>
-            <button
-              type="button"
-              onClick={() => fillScenario(3)}
-              className="px-3.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs"
-              title="Pre-fills ₹75,000 cheque with Positive Pay MISMATCH"
-            >
-              Case 3: Discrepancy (₹75,000)
+              Security Inspector
             </button>
           </div>
         </div>
@@ -205,16 +140,11 @@ export default function ChequeUploadForm({ onCreated }) {
 
         {ocrSuccess && (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl p-4 text-xs flex flex-wrap items-center justify-between gap-2 animate-in fade-in duration-150">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <span className="font-bold">AI OCR Extraction Successful:</span> MICR line, cheque number & account auto-filled.
-                <span className="ml-2 font-mono text-xs text-emerald-700 font-semibold">({ocrSuccess.confidence}% confidence)</span>
-              </div>
+            <div>
+              <span className="font-bold">OCR Extraction Completed:</span> MICR line, cheque number and account auto-filled.
+              <span className="ml-2 font-mono text-xs text-emerald-700 font-semibold">({ocrSuccess.confidence}% confidence)</span>
             </div>
-            <span className="text-xs text-emerald-800 font-bold uppercase tracking-wider bg-white/80 border border-emerald-300 px-2.5 py-1 rounded-md">CTS-2010 Passed</span>
+            <span className="text-xs text-emerald-800 font-bold uppercase tracking-wider bg-white/80 border border-emerald-300 px-2.5 py-1 rounded-md">Verified</span>
           </div>
         )}
 
@@ -223,10 +153,10 @@ export default function ChequeUploadForm({ onCreated }) {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
-                Cheque Image (AI Optical Character Recognition)
+                Cheque Image (Optical Character Recognition)
               </label>
               <p className="text-xs text-slate-500">
-                Upload scanned image to auto-detect E-13B MICR line, Cheque #, and Security Fibers.
+                Upload instrument image to scan E-13B MICR line and instrument details.
               </p>
             </div>
 
@@ -238,12 +168,8 @@ export default function ChequeUploadForm({ onCreated }) {
                 className="text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-600 file:text-white hover:file:bg-brand-700 cursor-pointer transition-all"
               />
               {scanningOcr && (
-                <span className="text-xs text-brand-600 font-bold flex items-center gap-1.5 whitespace-nowrap">
-                  <svg className="animate-spin h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                  </svg>
-                  <span>Scanning Instrument...</span>
+                <span className="text-xs text-brand-600 font-bold whitespace-nowrap">
+                  Scanning Instrument...
                 </span>
               )}
             </div>
@@ -252,14 +178,11 @@ export default function ChequeUploadForm({ onCreated }) {
 
         {warnings.length > 0 && (
           <div className="bg-orange-50 border border-orange-200 text-orange-900 text-xs rounded-xl p-4 space-y-1.5">
-            <div className="font-bold flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-orange-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-              <span>Cheque presented, but flagged for compliance review:</span>
+            <div className="font-bold">
+              Cheque presented, flagged for review:
             </div>
             {warnings.map((w, i) => (
-              <div key={i} className="text-xs pl-5 font-medium">• {w}</div>
+              <div key={i} className="text-xs pl-3 font-medium">• {w}</div>
             ))}
           </div>
         )}

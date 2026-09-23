@@ -148,38 +148,17 @@ export default function BulkBatchUploadPanel({ onBatchIngested }) {
     }
 
     setIsProcessing(true);
-    setProgressPercent(10);
-    setCurrentStepText("Initializing batch ingestion queue...");
-    setActiveWorkerThread("Thread 1: Record Validation");
+    setProgressPercent(20);
+    setCurrentStepText("Ingesting batch into clearing queue...");
 
     try {
-      // Step 1: Record format parse
-      await new Promise((r) => setTimeout(r, 450));
-      setProgressPercent(35);
-      setCurrentStepText("Validating E-13B MICR line data...");
-      setActiveWorkerThread("Thread 2: MICR Validation Engine");
-
-      // Step 2: Post to backend bulk ingestion queue
-      await new Promise((r) => setTimeout(r, 450));
-      setProgressPercent(60);
-      setCurrentStepText("Cross-referencing Positive Pay Registry...");
-      setActiveWorkerThread("Thread 3: Positive Pay Matching");
-
       const response = await client.post("/cheques/bulk-ingest", {
         batchName,
         instruments: instrumentsToIngest,
       });
 
-      // Step 3: Ledger hashing
-      setProgressPercent(85);
-      setCurrentStepText("Computing SHA-256 cryptographic audit hashes for clearing batch...");
-      setActiveWorkerThread("Thread 4: Audit Ledger Hashing");
-
-      await new Promise((r) => setTimeout(r, 400));
       setProgressPercent(100);
-      setCurrentStepText("Ingestion complete. All instruments registered in clearing session.");
-      setActiveWorkerThread("Worker Queue: Completed");
-
+      setCurrentStepText("Batch ingestion completed successfully.");
       setIngestionSummary(response.data);
 
       if (onBatchIngested) {
@@ -203,12 +182,9 @@ export default function BulkBatchUploadPanel({ onBatchIngested }) {
               BATCH INGESTION
             </span>
             <h2 className="font-bold text-slate-900 text-lg">
-              Branch Batch File Ingestion (CSV)
+              Batch File Ingestion (CSV)
             </h2>
           </div>
-          {/* <p className="text-xs text-slate-500 mt-1">
-            Automated multi-instrument clearing upload conforming to CTS-2010 specifications
-          </p> */}
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -217,7 +193,7 @@ export default function BulkBatchUploadPanel({ onBatchIngested }) {
             disabled={isProcessing}
             className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap shadow-2xs"
           >
-            Load Sample Batch (5 Instruments)
+            Load Sample Data
           </button>
         </div>
       </div>
@@ -303,46 +279,28 @@ export default function BulkBatchUploadPanel({ onBatchIngested }) {
           disabled={isProcessing}
           className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-xl text-sm shadow-xs transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 tracking-wide"
         >
-          {isProcessing ? (
-            <>
-              <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              <span>Processing Batch ({progressPercent}%)...</span>
-            </>
-          ) : (
-            <span>Execute Batch Ingestion</span>
-          )}
+          {isProcessing ? `Processing Batch (${progressPercent}%)...` : "Execute Batch Ingestion"}
         </button>
       </div>
 
-      {/* Real-time Worker Thread & Progress Bar Pipeline */}
+      {/* Ingestion Progress */}
       {isProcessing && (
         <div className="p-5 rounded-2xl bg-slate-900 text-slate-100 space-y-4 shadow-inner">
           <div className="flex flex-wrap items-center justify-between text-xs gap-2">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-              <span className="font-bold text-emerald-400">Asynchronous Worker Pipeline Active</span>
-            </div>
-            <span className="font-mono text-xs text-slate-400">Throughput: 240 instruments / min · Batch Ingestion Worker #1</span>
+            <span className="font-bold text-emerald-400">Ingestion in Progress</span>
+            <span className="font-mono text-xs text-slate-400">Batch Processing</span>
           </div>
 
           {/* Progress bar */}
           <div className="w-full bg-slate-800 rounded-full h-4 overflow-hidden p-0.5 border border-slate-700">
             <div
-              className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-300"
+              className="bg-brand-600 h-full rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2 font-mono text-slate-300">
-            <span>{currentStepText}</span>
-            <span className="text-amber-400 font-bold">{activeWorkerThread}</span>
+          <div className="text-xs font-mono text-slate-300">
+            {currentStepText}
           </div>
         </div>
       )}

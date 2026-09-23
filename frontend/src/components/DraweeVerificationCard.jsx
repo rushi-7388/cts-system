@@ -65,11 +65,8 @@ export default function DraweeVerificationCard({
           <span className="text-[10px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
             MICR: {cheque.micrCode || "395024002"}
           </span>
-          <span className="text-[10px] font-semibold text-white bg-brand-600/90 px-2 py-0.5 rounded flex items-center gap-1 backdrop-blur-xs group-hover:bg-brand-500 transition-colors">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            Inspect UV / Scan
+          <span className="text-[10px] font-semibold text-white bg-brand-600/90 px-2 py-0.5 rounded backdrop-blur-xs group-hover:bg-brand-500 transition-colors">
+            Inspect Instrument
           </span>
         </div>
       </div>
@@ -92,14 +89,13 @@ export default function DraweeVerificationCard({
           </div>
         </div>
 
-        {/* 3 Core Assessment Badges (Positive Pay, AI Biometrics, Risk) */}
+        {/* 3 Core Assessment Badges (Positive Pay, Signature, Risk) */}
         <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-100 text-center">
           {/* 1. Positive Pay Status */}
           <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
             <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Positive Pay (PPS)</div>
             {cheque.ppsStatus === "PPS_VERIFIED" ? (
               <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 <span>Confirmed</span>
               </span>
             ) : cheque.ppsStatus === "PPS_MISMATCH" ? (
@@ -107,7 +103,6 @@ export default function DraweeVerificationCard({
                 className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 cursor-help"
                 title={JSON.stringify(cheque.ppsDiscrepancy || "Discrepancy detected")}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
                 <span>Mismatch</span>
               </span>
             ) : Number(cheque.amount) >= 50000 ? (
@@ -119,7 +114,7 @@ export default function DraweeVerificationCard({
             )}
           </div>
 
-          {/* 2. AI Specimen Signature Biometrics */}
+          {/* 2. Signature Biometrics */}
           <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
             <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Signature Match</div>
             {cheque.signatureMatchScore ? (
@@ -165,21 +160,17 @@ export default function DraweeVerificationCard({
         )}
       </div>
 
-      {/* Card Action Deck (Prominently Placed at the Bottom with ZERO horizontal scrolling!) */}
+      {/* Card Action Deck */}
       <div className="p-4 bg-gray-50 border-t border-gray-100 flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
           {/* Inspector Trigger */}
           <button
             type="button"
             onClick={() => onInspect(cheque)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-800 text-xs font-bold border border-gray-200 shadow-2xs transition-colors cursor-pointer"
-            title="Inspect high-resolution scan, UV blacklight watermark, and AI specimen signature comparison"
+            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-800 text-xs font-bold border border-gray-200 shadow-2xs transition-colors cursor-pointer"
+            title="Inspect scan and signature comparison"
           >
-            <svg className="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <span>Inspect Instrument & UV</span>
+            <span>Inspect Instrument</span>
           </button>
 
           {/* Statutory tools if already final */}
@@ -187,11 +178,8 @@ export default function DraweeVerificationCard({
             <button
               type="button"
               onClick={() => onViewReturnMemo(cheque.id)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
               <span>Return Memo (Sec 138)</span>
             </button>
           )}

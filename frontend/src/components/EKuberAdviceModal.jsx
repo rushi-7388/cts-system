@@ -78,11 +78,9 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="text-xs font-semibold text-slate-400 hover:text-white px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            Close
           </button>
         </div>
 
@@ -113,12 +111,8 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto max-h-[75vh]">
           {loading ? (
-            <div className="flex items-center justify-center p-12 text-xs text-gray-500 gap-2">
-              <svg className="animate-spin h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-              </svg>
-              <span>Generating Central Bank e-Kuber Settlement Digest...</span>
+            <div className="flex items-center justify-center p-12 text-xs text-gray-500">
+              Loading Central Bank e-Kuber Settlement Digest...
             </div>
           ) : activeTab === "advice" ? (
             /* Formal Certificate View */
@@ -208,13 +202,6 @@ export default function EKuberAdviceModal({ chequeId, onClose }) {
                     DISPATCHED (T+0 FAST-PATH)
                   </span>
                 </div>
-              </div>
-
-              {/* Regulatory Mandate Footnote */}
-              <div className="text-[10px] text-gray-500 leading-relaxed border-t border-gray-200 pt-3">
-                This advice constitutes proof of interbank fund realization under the
-                Reserve Bank of India Continuous Clearing & On-Realisation Settlement Directive. Funds credited
-                to the presenting bank are final under the Payment and Settlement Systems Act, 2007.
               </div>
             </div>
           ) : (

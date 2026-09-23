@@ -90,16 +90,7 @@ export default function DevOpsConsole() {
     }
   }
 
-  function triggerSimulatedClientCrash() {
-    try {
-      throw new Error("Synthetic client-side exception triggered for DevOps telemetry demonstration");
-    } catch (err) {
-      reportError(err, { source: "DevOpsConsole.manual_test", simulated: true });
-      loadData();
-      setChaosActionMessage("Client exception captured and dispatched to /api/telemetry/report");
-      setTimeout(() => setChaosActionMessage(null), 4000);
-    }
-  }
+
 
   if (loading && !stats) {
     return (
@@ -270,26 +261,20 @@ export default function DevOpsConsole() {
       <div className="bg-white rounded-xl shadow p-6 border border-gray-100">
         <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b">
           <div>
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <svg className="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span>Interactive Chaos Engineering & Fault Injection Simulator</span>
+            <h3 className="text-base font-bold text-gray-900">
+              System Fault Injection & Resilience Testing
             </h3>
             <p className="text-xs text-gray-500 mt-0.5">
-              Simulate enterprise failure modes to test circuit breakers, telemetry ingestion, and SRE resilience live.
+              Verify circuit breakers, timeout thresholds, and telemetry ingestion under load
             </p>
           </div>
 
           <button
             type="button"
             onClick={handleResetChaos}
-            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Restore Normal Operations</span>
+            Restore Normal Operations
           </button>
         </div>
 
@@ -474,12 +459,6 @@ export default function DevOpsConsole() {
         <div className="bg-white rounded-xl shadow p-6 border border-gray-100">
           <div className="flex items-center justify-between pb-3 border-b mb-4">
             <h3 className="text-sm font-bold text-gray-900">Real-Time Telemetry & Exception Stream</h3>
-            <button
-              onClick={triggerSimulatedClientCrash}
-              className="px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs rounded transition-colors font-medium"
-            >
-              Simulate Client Error
-            </button>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">

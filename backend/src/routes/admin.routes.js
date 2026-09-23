@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.use(authenticate);
 
-router.get("/stats", authorize("COMPLIANCE_AUDITOR", "ADMIN"), getStats);
+router.get("/stats", getStats);
 router.get("/audit-trail", authorize("COMPLIANCE_AUDITOR", "ADMIN"), getAuditTrail);
 router.get("/banks", listBanks);
 router.get("/fraud-flags", authorize("COMPLIANCE_AUDITOR", "ADMIN"), listFraudFlags);

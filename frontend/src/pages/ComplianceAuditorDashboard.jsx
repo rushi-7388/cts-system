@@ -41,15 +41,14 @@ export default function ComplianceAuditorDashboard() {
         {/* Auditor Portal Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 mb-2">
               RBI Regulatory Oversight & Central Compliance Wing
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               Regulatory Compliance & Forensic Audit Portal
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Cryptographic SHA-256 blockchain verification, Positive Pay System audits, statutory return compliance, and ISO 20022 message certification.
+              SHA-256 ledger verification, Positive Pay System audits, statutory return compliance, and ISO 20022 message certification.
             </p>
           </div>
 
@@ -57,12 +56,9 @@ export default function ComplianceAuditorDashboard() {
             <button
               type="button"
               onClick={() => setShowPpsModal(true)}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-xs cursor-pointer"
             >
-              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>Positive Pay Central Registry</span>
+              Positive Pay Central Registry
             </button>
           </div>
         </div>

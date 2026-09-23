@@ -29,29 +29,22 @@ export default function ClearanceCertificateModal({ cheque, onClose }) {
         {/* Modal Controls (Hidden in Print) */}
         <div className="px-6 py-3 border-b flex items-center justify-between bg-gray-50 print:hidden">
           <span className="font-bold text-xs text-gray-700 uppercase tracking-wider">
-            Official CTS Cheque Clearance Certificate
+            CTS Cheque Clearance Certificate
           </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handlePrint}
-              className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+              className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-xs cursor-pointer"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-              </svg>
-              <span>Print / Save as PDF</span>
+              Print / Save PDF
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-lg ml-2 flex items-center justify-center"
-              title="Close Certificate"
-              aria-label="Close Certificate"
+              className="text-xs font-semibold text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Close
             </button>
           </div>
         </div>
@@ -79,11 +72,8 @@ export default function ClearanceCertificateModal({ cheque, onClose }) {
 
             {/* Verification Status Banner */}
             <div className="my-6 bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-center">
-              <span className="text-xs font-bold text-emerald-900 tracking-wider uppercase flex items-center justify-center gap-1.5">
-                <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>STATUS: CLEARED & RECONCILED UNDER CTS-2010 CLEARING STANDARD</span>
+              <span className="text-xs font-bold text-emerald-900 tracking-wider uppercase">
+                STATUS: CLEARED & RECONCILED UNDER CTS CLEARING STANDARD
               </span>
             </div>
 
@@ -131,11 +121,10 @@ export default function ClearanceCertificateModal({ cheque, onClose }) {
                 </div>
               </div>
 
-              {/* Vector Simulated QR Code */}
-              <div className="w-16 h-16 border-2 border-gray-900 p-1 bg-white shrink-0 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-full h-full fill-gray-900">
-                  <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h3v3h-3v-3zm-5 0h3v3h-3v-3zm0 5h3v3h-3v-3zm5 0h3v3h-3v-3z" />
-                </svg>
+              {/* Digital Verification Stamp */}
+              <div className="border border-gray-900 px-3 py-2 bg-white shrink-0 text-center font-mono">
+                <div className="text-[10px] font-bold text-gray-900 tracking-wider">SEALED</div>
+                <div className="text-[8px] text-gray-500">CTS-2010</div>
               </div>
             </div>
           </div>

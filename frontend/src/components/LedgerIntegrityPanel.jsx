@@ -30,14 +30,9 @@ export default function LedgerIntegrityPanel() {
     <div className="bg-white rounded-xl shadow border border-gray-100 p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b">
         <div>
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-            </svg>
-            <h2 className="text-lg font-bold text-gray-900">Cryptographic Blockchain Audit Ledger</h2>
-          </div>
+          <h2 className="text-lg font-bold text-gray-900">Audit Ledger Verification</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Tamper-proof SHA-256 hash chaining: every clearing event is cryptographically sealed to preceding blocks.
+            Cryptographic SHA-256 hash verification of clearing events and audit trail
           </p>
         </div>
 
@@ -45,19 +40,9 @@ export default function LedgerIntegrityPanel() {
           type="button"
           onClick={runAudit}
           disabled={loading}
-          className="bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
+          className="bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow-xs cursor-pointer"
         >
-          {loading ? (
-            <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-            </svg>
-          ) : (
-            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          )}
-          <span>{loading ? "Auditing Hashes..." : "Verify Ledger Integrity"}</span>
+          {loading ? "Verifying..." : "Verify Ledger Integrity"}
         </button>
       </div>
 
@@ -70,24 +55,13 @@ export default function LedgerIntegrityPanel() {
               : "bg-rose-50 border-rose-200 text-rose-950"
           }`}
         >
-          <div className="flex items-center gap-3">
-            {auditResult.isValid ? (
-              <svg className="w-6 h-6 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            )}
-            <div>
-              <div className="font-bold text-sm">
-                {auditResult.isValid
-                  ? "Ledger Integrity Verified: 100% Tamper-Proof"
-                  : "SECURITY ALERT: Hash-Chain Integrity Compromised!"}
-              </div>
-              <div className="text-xs opacity-80 mt-0.5">{auditResult.message || auditResult.reason}</div>
+          <div>
+            <div className="font-bold text-sm">
+              {auditResult.isValid
+                ? "Ledger Integrity Verified"
+                : "Security Alert: Integrity Verification Failed"}
             </div>
+            <div className="text-xs opacity-80 mt-0.5">{auditResult.message || auditResult.reason}</div>
           </div>
 
           <div className="text-xs font-mono bg-white/70 px-3 py-1.5 rounded-lg border">
@@ -122,7 +96,7 @@ export default function LedgerIntegrityPanel() {
       {/* Visual Hash Chain Block Explorer */}
       <div>
         <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-          Recent Chained Blocks (Sequential SHA-256 Ledger Stream)
+          Recent Audit Ledger Blocks
         </h3>
 
         <div className="space-y-3">

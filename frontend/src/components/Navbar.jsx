@@ -125,6 +125,7 @@ export default function Navbar() {
   }
 
   const isAdmin = user?.role === "ADMIN";
+  const canManageRBAC = user?.role === "BRANCH_MANAGER" || user?.role === "ADMIN";
 
   return (
     <>
@@ -135,47 +136,21 @@ export default function Navbar() {
             onClick={() => navigate("/")}
             className="flex items-center gap-3 cursor-pointer group select-none"
           >
-            <div className="relative flex items-center justify-center">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 rounded-xl blur-[2px] opacity-70 group-hover:opacity-100 transition duration-300"></div>
-              <img
-                src={logo}
-                alt="CTS Logo"
-                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover border border-white/40 shadow-sm"
-              />
-            </div>
+            <img
+              src={logo}
+              alt="CTS Logo"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover border border-slate-700"
+            />
             <div className="flex flex-col">
-              <div className="font-extrabold tracking-tight text-sm sm:text-base leading-none flex items-center gap-2">
+              <div className="font-bold tracking-tight text-sm sm:text-base leading-none flex items-center gap-2">
                 <span className="text-white">CTS</span>
-                <span className="text-slate-500 font-light hidden sm:inline">|</span>
-                <span className="text-xs font-semibold text-slate-200 hidden sm:inline tracking-normal">
+                <span className="text-slate-600 font-light hidden sm:inline">|</span>
+                <span className="text-xs font-semibold text-slate-300 hidden sm:inline tracking-normal">
                   Cheque Truncation System
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 font-mono tracking-wider uppercase mt-0.5 hidden md:block">
-                Interbank Clearing & SRE Platform
-              </span>
             </div>
           </div>
-
-          {/* Live System SRE Status Pill */}
-          {/* <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-800/80 border border-slate-700"> */}
-          {/* <span
-              className={`w-2 h-2 rounded-full ${
-                !systemHealthy
-                  ? "bg-rose-400 animate-ping"
-                  : chaosActive
-                  ? "bg-amber-400 animate-pulse"
-                  : "bg-emerald-400"
-              }`}
-            ></span> */}
-          {/* <span className="text-slate-300">
-              {!systemHealthy
-                ? "Service Degraded"
-                : chaosActive
-                ? "Chaos Active"
-                : "Core Switch: 99.9% SLO Active"}
-            </span> */}
-          {/* </div> */}
 
           {/* Cross-portal quick tabs for Admin */}
           {isAdmin && (
@@ -243,6 +218,15 @@ export default function Navbar() {
               >
                 Settlement
               </Link>
+              <Link
+                to="/rbac"
+                className={`px-2 py-0.5 rounded-md transition-colors ${location.pathname === "/rbac"
+                    ? "bg-purple-600 text-white font-semibold"
+                    : "text-purple-300 hover:text-white"
+                  }`}
+              >
+                RBAC
+              </Link>
             </div>
           )}
         </div>
@@ -250,18 +234,20 @@ export default function Navbar() {
         {/* Right: Actions & User Info */}
         {user && (
           <div className="flex items-center gap-2.5 sm:gap-3 text-xs">
-            {/* Positive Pay System Action */}
-            {/* <button
-              type="button"
-              onClick={() => setShowPpsModal(true)}
-              className="bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-              title="Open Positive Pay System Central Registry"
-            >
-              <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span className="hidden md:inline">Positive Pay (PPS)</span> */}
-            {/* </button> */}
+            {/* RBAC Portal Link for Managers and Admins */}
+            {canManageRBAC && (
+              <Link
+                to="/rbac"
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center ${
+                  location.pathname === "/rbac"
+                    ? "bg-purple-600 text-white shadow-xs"
+                    : "bg-purple-950/70 border border-purple-800/80 text-purple-300 hover:text-white hover:bg-purple-900"
+                }`}
+                title="Manage RBAC, User Roles & Branch Limits"
+              >
+                <span>RBAC & Roles</span>
+              </Link>
+            )}
 
             {/* Role Switcher Dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -272,9 +258,7 @@ export default function Navbar() {
                 title="Switch active role"
               >
                 <span>Switch Role</span>
-                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
+                <span className="text-[10px] text-slate-400 font-mono">▼</span>
               </button>
 
               {showRoleDropdown && (

@@ -11,7 +11,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "🏛️ India National CTS 3.0: Continuous Clearing & e-Kuber Real-Time Pulse",
+      "title": "National CTS: Continuous Clearing & e-Kuber Real-Time Pulse",
       "type": "row"
     },
     {
@@ -114,7 +114,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 101,
-      "title": "⚡ Real-Time Clearing Velocity & Interbank Liquidity Stress",
+      "title": "Real-Time Clearing Velocity & Interbank Liquidity",
       "type": "row"
     },
     {
@@ -167,7 +167,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
       "id": 102,
-      "title": "🛡️ Fraud Defense & SRE API Latency P95/P99",
+      "title": "Fraud Defense & SRE API Latency P95/P99",
       "type": "row"
     },
     {

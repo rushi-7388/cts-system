@@ -8,7 +8,6 @@ export default function SettlementSummary() {
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedSettlementId, setSelectedSettlementId] = useState(null);
-  const [stressSimulating, setStressSimulating] = useState(false);
 
   async function loadData() {
     try {
@@ -38,49 +37,6 @@ export default function SettlementSummary() {
       setMessage(err.response?.data?.error || "Settlement run failed");
     } finally {
       setRunning(false);
-    }
-  }
-
-  // Adjust collateral for stress testing / live demo of LIQUIDITY_WARNING
-  async function handleSimulateBreach() {
-    setStressSimulating(true);
-    try {
-      await Promise.all([
-        client.patch("/settlements/collateral-limit", {
-          ifsc: "HDFC0005678",
-          allocatedCollateral: 1500000, // 95.7% of ₹14.35L outflow -> triggers >85% LIQUIDITY_WARNING
-        }),
-        client.patch("/settlements/collateral-limit", {
-          ifsc: "SBIN0001234",
-          allocatedCollateral: 100000,
-        }),
-      ]);
-      await loadData();
-    } catch (err) {
-      console.error("Failed to simulate breach:", err);
-    } finally {
-      setStressSimulating(false);
-    }
-  }
-
-  async function handleResetCollateral() {
-    setStressSimulating(true);
-    try {
-      await Promise.all([
-        client.patch("/settlements/collateral-limit", {
-          ifsc: "HDFC0005678",
-          allocatedCollateral: 3000000, // Standard ₹30 Lakhs
-        }),
-        client.patch("/settlements/collateral-limit", {
-          ifsc: "SBIN0001234",
-          allocatedCollateral: 2500000, // Standard ₹25 Lakhs
-        }),
-      ]);
-      await loadData();
-    } catch (err) {
-      console.error("Failed to reset collateral:", err);
-    } finally {
-      setStressSimulating(false);
     }
   }
 
@@ -352,38 +308,6 @@ export default function SettlementSummary() {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Live Collateral Stress Testing Simulator Controls */}
-        <div className="p-3.5 bg-slate-900 text-slate-200 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-          <div>
-            <span className="font-bold text-slate-100 flex items-center gap-1.5">
-              Intraday Exposure Stress Simulation
-            </span>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              Adjust intraday collateral allocation to verify regulatory alert triggers.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={stressSimulating}
-              onClick={handleSimulateBreach}
-              className="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-[11px] transition-colors cursor-pointer disabled:opacity-50"
-              title="Sets clearing collateral below intraday exposure to trigger > 85% Warning"
-            >
-              Simulate Cap Breach (&gt;85%)
-            </button>
-            <button
-              type="button"
-              disabled={stressSimulating}
-              onClick={handleResetCollateral}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-medium text-[11px] transition-colors cursor-pointer disabled:opacity-50"
-              title="Resets standard collateral caps for all clearing banks"
-            >
-              Reset Collateral Caps
-            </button>
-          </div>
         </div>
       </div>
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import BatchManagementPanel from "../components/BatchManagementPanel";
 import BulkBatchUploadPanel from "../components/BulkBatchUploadPanel";
@@ -91,16 +92,20 @@ export default function BranchManagerDashboard() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              to="/rbac"
+              className="bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-xs cursor-pointer"
+            >
+              Manage Branch RBAC
+            </Link>
+
             <button
               type="button"
               onClick={handleDispatchBatch}
               disabled={actionLoading === "dispatch"}
-              className="bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-sm cursor-pointer disabled:opacity-50"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-              <span>{actionLoading === "dispatch" ? "Dispatching..." : "Seal & Dispatch Branch Batch"}</span>
+              {actionLoading === "dispatch" ? "Dispatching..." : "Dispatch Branch Batch"}
             </button>
           </div>
         </div>
@@ -224,11 +229,6 @@ export default function BranchManagerDashboard() {
 
             {awaitingSignatureCheques.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
                 <h4 className="font-bold text-sm text-slate-800">Queue Clear</h4>
                 <p className="text-xs text-slate-500 mt-1">
                   All high-value cheques presented at this branch have been authorized and counter-signed.
@@ -277,12 +277,9 @@ export default function BranchManagerDashboard() {
                             type="button"
                             onClick={() => handleApprove(chq.id)}
                             disabled={actionLoading === chq.id}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition-all shadow-xs cursor-pointer disabled:opacity-50 inline-flex items-center gap-1"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition-all shadow-xs cursor-pointer disabled:opacity-50"
                           >
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>{actionLoading === chq.id ? "Signing..." : "Counter-Sign"}</span>
+                            {actionLoading === chq.id ? "Signing..." : "Counter-Sign"}
                           </button>
                         </td>
                       </tr>
@@ -343,10 +340,7 @@ export default function BranchManagerDashboard() {
                       </td>
                       <td className="px-4 py-3">
                         {c.branchManagerApproved ? (
-                          <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
+                          <span className="text-[10px] text-emerald-700 font-semibold">
                             Approved
                           </span>
                         ) : Number(c.amount) >= 50000 ? (

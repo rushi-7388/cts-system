@@ -42,10 +42,6 @@ export default function LiveSettlementTicker() {
   return (
     <div className="bg-slate-950 text-white px-4 sm:px-6 py-2 text-xs flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 shadow-inner">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        </div>
-
         <div className={`transition-all duration-300 font-mono ${pulse ? "text-emerald-400 scale-102" : "text-slate-300"}`}>
           Cleared Volume: <span className="font-bold text-white">₹{tickerData.clearedVolume.toLocaleString("en-IN")}</span>{" "}
           <span className="text-slate-400 text-[11px]">({tickerData.clearedCount} instruments)</span>

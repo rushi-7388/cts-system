@@ -41,7 +41,6 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
         {/* Modal Controls (Hidden during Print) */}
         <div className="px-6 py-3 border-b flex items-center justify-between bg-rose-50/50 print:hidden">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse"></span>
             <span className="font-bold text-xs text-rose-900 uppercase tracking-wider">
               Statutory Cheque Dishonour Memo (Section 138 NI Act)
             </span>
@@ -51,23 +50,16 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
               type="button"
               onClick={handlePrint}
               disabled={loading || !!error}
-              className="bg-rose-700 hover:bg-rose-800 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+              className="bg-rose-700 hover:bg-rose-800 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-xs cursor-pointer"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-              </svg>
-              <span>Print / Save as Legal Memo PDF</span>
+              Print / Save PDF
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg ml-1 flex items-center justify-center cursor-pointer"
-              title="Close Return Memo"
-              aria-label="Close Return Memo"
+              className="text-xs font-semibold text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Close
             </button>
           </div>
         </div>
@@ -75,12 +67,8 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
         {/* Content Area */}
         <div className="flex-1 p-8 overflow-auto bg-white text-gray-900 print:p-0">
           {loading && (
-            <div className="py-20 text-center text-sm text-gray-500">
-              <svg className="animate-spin h-6 w-6 text-rose-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-              </svg>
-              Retrieving Statutory Return Memo from Interbank Clearing Archive...
+            <div className="py-20 text-center text-sm text-gray-500 font-medium">
+              Retrieving Statutory Return Memo...
             </div>
           )}
 
@@ -115,11 +103,8 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
 
               {/* Statutory Alert Banner */}
               <div className="bg-rose-50 border-2 border-rose-300 rounded-lg p-3 text-center">
-                <div className="text-xs font-bold text-rose-900 uppercase tracking-wider flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4 text-rose-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  <span>OFFICIAL DISHONOUR NOTICE: INSTRUMENT RETURNED UNPAID BY DRAWEE BANK</span>
+                <div className="text-xs font-bold text-rose-900 uppercase tracking-wider">
+                  OFFICIAL DISHONOUR NOTICE: INSTRUMENT RETURNED UNPAID BY DRAWEE BANK
                 </div>
               </div>
 
@@ -207,10 +192,8 @@ export default function StatutoryReturnMemoModal({ chequeId, onClose }) {
                     </div>
                     <div className="text-[9px] text-gray-500">DIGITAL BANK SEAL</div>
                   </div>
-                  <div className="w-14 h-14 border-2 border-rose-900 p-1 bg-white flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 24 24" className="w-full h-full fill-rose-900">
-                      <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h3v3h-3v-3zm-5 0h3v3h-3v-3zm0 5h3v3h-3v-3zm5 0h3v3h-3v-3z" />
-                    </svg>
+                  <div className="border border-rose-900 px-3 py-2 bg-white flex items-center justify-center shrink-0">
+                    <span className="font-mono text-[10px] font-bold text-rose-900">SEALED</span>
                   </div>
                 </div>
               </div>

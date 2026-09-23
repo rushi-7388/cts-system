@@ -14,6 +14,7 @@ const adminRoutes = require("./routes/admin.routes");
 const batchRoutes = require("./routes/batch.routes");
 const devopsRoutes = require("./routes/devops.routes");
 const branchRoutes = require("./routes/branch.routes");
+const rbacRoutes = require("./routes/rbac.routes");
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use("/api/settlements", settlementRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/batches", batchRoutes);
 app.use("/api/branch", branchRoutes);
+app.use("/api/rbac", rbacRoutes);
 
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 

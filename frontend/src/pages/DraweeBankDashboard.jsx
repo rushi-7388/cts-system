@@ -52,7 +52,7 @@ export default function DraweeBankDashboard() {
     load();
   });
 
-  // Calculate Key Operational Metrics
+  // Calculate Key Operational Metrics (Global)
   const metrics = useMemo(() => {
     const actionNeeded = cheques.filter((c) => ["PRESENTED", "AWAITING_CHECKER"].includes(c.status));
     const awaitingChecker = cheques.filter((c) => c.status === "AWAITING_CHECKER");
@@ -70,36 +70,109 @@ export default function DraweeBankDashboard() {
     };
   }, [cheques]);
 
-  // Filter cheques based on active tab and search query
-  const filteredCheques = useMemo(() => {
-    return cheques.filter((c) => {
-      // 1. Tab Filter
-      if (activeTab === "action_needed" && !["PRESENTED", "AWAITING_CHECKER"].includes(c.status)) {
-        return false;
-      }
-      if (activeTab === "awaiting_checker" && c.status !== "AWAITING_CHECKER") {
-        return false;
-      }
-      if (activeTab === "cleared" && c.status !== "CLEARED") {
-        return false;
-      }
-      if (activeTab === "returned" && c.status !== "RETURNED") {
-        return false;
-      }
+  // Robust search matcher checking Cheque ID, Batch ID, Session Code, Cheque Number, Payee, Account, IFSC, etc.
+  const isMatch = (c, q) => {
+    if (!q) return true;
+    const query = q.toLowerCase();
+    const id = (c.id || "").toLowerCase();
+    const chequeNumber = (c.chequeNumber || "").toLowerCase();
+    const batchId = (c.batchId || "").toLowerCase();
+    const sessionCode = (c.batch?.sessionCode || "").toLowerCase();
+    const sessionName = (c.batch?.sessionName || "").toLowerCase();
+    const accountNumber = (c.accountNumber || "").toLowerCase();
+    const micrCode = (c.micrCode || "").toLowerCase();
+    const payeeName = (c.payeeName || "").toLowerCase();
+    const amount = (c.amount || "").toString().toLowerCase();
+    const presentingBankName = (c.presentingBank?.name || "").toLowerCase();
+    const presentingBankCode = (c.presentingBank?.code || "").toLowerCase();
+    const presentingBankIfsc = (c.presentingBank?.ifsc || "").toLowerCase();
+    const draweeBankName = (c.draweeBank?.name || "").toLowerCase();
+    const draweeBankIfsc = (c.draweeBank?.ifsc || "").toLowerCase();
+    const status = (c.status || "").toLowerCase();
+    const ekuberUtr = (c.ekuberUtr || "").toLowerCase();
 
-      // 2. Search Query Filter
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchNumber = c.chequeNumber?.toLowerCase().includes(query);
-        const matchPayee = c.payeeName?.toLowerCase().includes(query);
-        const matchAmount = c.amount?.toString().includes(query);
-        const matchBank = c.presentingBank?.name?.toLowerCase().includes(query);
-        return matchNumber || matchPayee || matchAmount || matchBank;
-      }
+    return (
+      id.includes(query) ||
+      chequeNumber.includes(query) ||
+      batchId.includes(query) ||
+      sessionCode.includes(query) ||
+      sessionName.includes(query) ||
+      accountNumber.includes(query) ||
+      micrCode.includes(query) ||
+      payeeName.includes(query) ||
+      amount.includes(query) ||
+      presentingBankName.includes(query) ||
+      presentingBankCode.includes(query) ||
+      presentingBankIfsc.includes(query) ||
+      draweeBankName.includes(query) ||
+      draweeBankIfsc.includes(query) ||
+      status.includes(query) ||
+      ekuberUtr.includes(query)
+    );
+  };
 
+  // Cheques matching search query regardless of tab
+  const matchingCheques = useMemo(() => {
+    const q = searchQuery.trim();
+    if (!q) return cheques;
+    return cheques.filter((c) => isMatch(c, q));
+  }, [cheques, searchQuery]);
+
+  // Tab counts dynamically adjusted if searching
+  const tabCounts = useMemo(() => {
+    const pool = searchQuery.trim() ? matchingCheques : cheques;
+    const actionNeeded = pool.filter((c) => ["PRESENTED", "AWAITING_CHECKER"].includes(c.status));
+    const awaitingChecker = pool.filter((c) => c.status === "AWAITING_CHECKER");
+    const cleared = pool.filter((c) => c.status === "CLEARED");
+    const returned = pool.filter((c) => c.status === "RETURNED");
+
+    return {
+      total: pool.length,
+      actionNeeded: actionNeeded.length,
+      awaitingChecker: awaitingChecker.length,
+      cleared: cleared.length,
+      returned: returned.length,
+    };
+  }, [cheques, matchingCheques, searchQuery]);
+
+  // Filtered cheques to display
+  const { filteredCheques, isCrossTabSearch } = useMemo(() => {
+    const q = searchQuery.trim();
+    if (!q) {
+      const list = cheques.filter((c) => {
+        if (activeTab === "action_needed" && !["PRESENTED", "AWAITING_CHECKER"].includes(c.status)) return false;
+        if (activeTab === "awaiting_checker" && c.status !== "AWAITING_CHECKER") return false;
+        if (activeTab === "cleared" && c.status !== "CLEARED") return false;
+        if (activeTab === "returned" && c.status !== "RETURNED") return false;
+        return true;
+      });
+      return { filteredCheques: list, isCrossTabSearch: false };
+    }
+
+    // When searching:
+    if (activeTab === "all") {
+      return { filteredCheques: matchingCheques, isCrossTabSearch: false };
+    }
+
+    const tabFiltered = matchingCheques.filter((c) => {
+      if (activeTab === "action_needed" && !["PRESENTED", "AWAITING_CHECKER"].includes(c.status)) return false;
+      if (activeTab === "awaiting_checker" && c.status !== "AWAITING_CHECKER") return false;
+      if (activeTab === "cleared" && c.status !== "CLEARED") return false;
+      if (activeTab === "returned" && c.status !== "RETURNED") return false;
       return true;
     });
-  }, [cheques, activeTab, searchQuery]);
+
+    // If active tab has matching results, show them.
+    // If active tab has 0 matches but matching cheques exist in other tabs (e.g. cheque was settled/cleared),
+    // show matching cheques so the search for Cheque ID or Batch NEVER comes up blank!
+    if (tabFiltered.length > 0) {
+      return { filteredCheques: tabFiltered, isCrossTabSearch: false };
+    } else if (matchingCheques.length > 0) {
+      return { filteredCheques: matchingCheques, isCrossTabSearch: true };
+    }
+
+    return { filteredCheques: [], isCrossTabSearch: false };
+  }, [cheques, matchingCheques, activeTab, searchQuery]);
 
   return (
     <div className="min-h-screen bg-gray-50/60 pb-16">
@@ -224,7 +297,7 @@ export default function DraweeBankDashboard() {
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
                 activeTab === "action_needed" ? "bg-amber-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
-                {metrics.actionNeededCount}
+                {tabCounts.actionNeeded}
               </span>
             </button>
 
@@ -241,7 +314,7 @@ export default function DraweeBankDashboard() {
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
                 activeTab === "awaiting_checker" ? "bg-purple-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
-                {metrics.awaitingCheckerCount}
+                {tabCounts.awaitingChecker}
               </span>
             </button>
 
@@ -258,7 +331,7 @@ export default function DraweeBankDashboard() {
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
                 activeTab === "all" ? "bg-slate-700 text-white" : "bg-slate-200 text-slate-700"
               }`}>
-                {metrics.total}
+                {tabCounts.total}
               </span>
             </button>
 
@@ -275,7 +348,7 @@ export default function DraweeBankDashboard() {
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
                 activeTab === "cleared" ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
-                {metrics.clearedCount}
+                {tabCounts.cleared}
               </span>
             </button>
 
@@ -292,33 +365,29 @@ export default function DraweeBankDashboard() {
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
                 activeTab === "returned" ? "bg-rose-800 text-white" : "bg-slate-200 text-slate-700"
               }`}>
-                {metrics.returnedCount}
+                {tabCounts.returned}
               </span>
             </button>
           </div>
 
           {/* Search Input & View Mode */}
           <div className="flex items-center gap-2">
-            <div className="relative min-w-[200px]">
+            <div className="relative w-64 sm:w-80 md:w-96">
               <input
                 type="text"
-                placeholder="Search Cheque #, Payee..."
+                placeholder="Search Cheque ID, Batch #, Cheque #, Payee..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-purple-500 pl-8"
+                className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 pr-8 transition-all shadow-2xs"
               />
-              <svg className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-2.5 top-1.5 text-slate-400 hover:text-slate-600 text-xs font-bold cursor-pointer"
+                  title="Clear search"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  [x]
                 </button>
               )}
             </div>
@@ -351,26 +420,61 @@ export default function DraweeBankDashboard() {
           </div>
         </div>
 
+        {/* Active Search Context Indicator */}
+        {searchQuery.trim() && (
+          <div className="bg-purple-50/80 border border-purple-200/90 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-purple-900 font-medium">
+                Searching: <span className="font-mono font-bold text-purple-950 bg-white px-2 py-0.5 rounded border border-purple-200">"{searchQuery.trim()}"</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full font-bold bg-purple-200/80 text-purple-900 font-mono text-[11px]">
+                {filteredCheques.length} match{filteredCheques.length === 1 ? "" : "es"}
+              </span>
+              {isCrossTabSearch && (
+                <span className="text-amber-800 bg-amber-100/90 border border-amber-300/80 px-2.5 py-0.5 rounded-full text-[11px] font-semibold flex items-center gap-1 shadow-2xs">
+                  <span>Matching cheque found in another status (showing across all tabs)</span>
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="px-2.5 py-1 rounded-lg bg-white border border-purple-200 text-purple-700 hover:bg-purple-100 font-semibold cursor-pointer transition-colors shadow-2xs"
+              >
+                Clear Search
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Content Area */}
         {loading ? (
           <div className="text-center p-12 bg-white rounded-2xl border border-gray-200/80 text-gray-500">
-            <div className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
             <p className="text-xs font-semibold">Loading Inward Clearing Queue...</p>
           </div>
         ) : filteredCheques.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-gray-200/80 shadow-xs space-y-3">
-            <div className="w-14 h-14 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="text-base font-bold text-gray-900">No Instruments in this Queue</h3>
+          <div className="bg-white rounded-2xl p-12 text-center border border-gray-200/80 shadow-xs space-y-3">
+            <h3 className="text-base font-bold text-gray-900">
+              {searchQuery.trim() ? "No Instruments Matched Your Search" : "No Instruments in this Queue"}
+            </h3>
             <p className="text-xs text-gray-500 max-w-md mx-auto">
-              {activeTab === "action_needed"
+              {searchQuery.trim()
+                ? `No instruments matched "${searchQuery.trim()}". You can search by Cheque UUID, Batch Code (e.g. BATCH-20260922-9507), Cheque Number, Payee Name, Account Number, or Bank IFSC.`
+                : activeTab === "action_needed"
                 ? "All presented inward instruments have been verified and processed. Queue is clear."
-                : "No cheques found matching the selected filter or search criteria."}
+                : "No cheques found matching the selected filter criteria."}
             </p>
-            {activeTab !== "all" && (
+            {searchQuery.trim() ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-xs"
+              >
+                Clear Search & Show All
+              </button>
+            ) : activeTab !== "all" ? (
               <button
                 type="button"
                 onClick={() => {
@@ -381,7 +485,7 @@ export default function DraweeBankDashboard() {
               >
                 View All Inward Instruments
               </button>
-            )}
+            ) : null}
           </div>
         ) : viewMode === "cards" ? (
           /* Zero-Scroll Workbench Cards Grid */

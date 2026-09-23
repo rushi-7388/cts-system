@@ -52,15 +52,14 @@ export default function ITStaffDashboard() {
         {/* Core SRE Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-850 border border-slate-800 rounded-2xl p-6 shadow-xl">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-800/60 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-800/60 mb-2">
               CTS Core Switch · SRE & Infrastructure Ops
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               IT Staff & Switch Reliability Command Center
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Live switch telemetry, Prometheus metrics scraper, Chaos Engineering injection, and database pool health.
+              Switch telemetry, Prometheus metrics, fault injection testing, and database pool health
             </p>
           </div>
 

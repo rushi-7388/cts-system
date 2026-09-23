@@ -77,18 +77,15 @@ export default function ContinuousClearingConsole() {
               CLEARING ENGINE
             </span>
             <h2 className="font-bold text-base text-gray-900">
-              RBI Continuous Clearing & e-Kuber Real-Time Settlement Console
+              Continuous Clearing & e-Kuber Settlement Console
             </h2>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            RBI Monetary Policy Mandate: On-Realisation Settlement & Instant Beneficiary Credit (T+0)
-          </p>
         </div>
 
         {/* Mode Toggle Switch */}
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <span className="text-[11px] font-semibold text-gray-700 block">Clearing Architecture</span>
+            <span className="text-[11px] font-semibold text-gray-700 block">Clearing Mode</span>
             <span
               className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                 isContinuous
@@ -96,7 +93,7 @@ export default function ContinuousClearingConsole() {
                   : "bg-amber-100 text-amber-800 border border-amber-300"
               }`}
             >
-              {isContinuous ? "CONTINUOUS (T+0 REAL-TIME)" : "LEGACY BATCH (T+1 CUT-OFF)"}
+              {isContinuous ? "CONTINUOUS (T+0)" : "BATCH (T+1)"}
             </span>
           </div>
           <button
@@ -112,7 +109,7 @@ export default function ContinuousClearingConsole() {
             {toggling
               ? "Switching..."
               : isContinuous
-              ? "Switch to Legacy Batch (T+1)"
+              ? "Switch to Batch (T+1)"
               : "Activate Continuous Clearing (T+0)"}
           </button>
         </div>
@@ -124,15 +121,12 @@ export default function ContinuousClearingConsole() {
         </div>
       )}
 
-      {/* Sub-Hourly Continuous Clearing Clock & SRE Telemetry Banner */}
+      {/* Sub-Hourly Continuous Clearing Clock */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Continuous Timer Card */}
         <div className="p-4 rounded-xl bg-slate-900 text-slate-100 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="font-bold text-emerald-400">Rolling Clearing Cycle</span>
-            </div>
+            <span className="font-bold text-emerald-400">Clearing Cycle</span>
             <span className="font-mono text-[10px] text-slate-400">Window: 15 Minutes</span>
           </div>
           <div className="flex items-baseline justify-between pt-1">
@@ -261,11 +255,8 @@ export default function ContinuousClearingConsole() {
                       <span className="text-emerald-700 font-semibold">{c.presentingBank?.code}</span>
                     </td>
                     <td className="px-3 py-2.5">
-                      <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center gap-1 w-fit">
-                        <svg className="w-3 h-3 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>T+0 CREDITED</span>
+                      <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] inline-block">
+                        T+0 CREDITED
                       </span>
                     </td>
                     <td className="px-3 py-2.5 text-right">

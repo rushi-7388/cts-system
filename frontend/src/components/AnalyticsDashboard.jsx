@@ -131,9 +131,7 @@ export default function AnalyticsDashboard() {
                 <div key={i} className="p-3.5 rounded-xl bg-gray-50 border border-gray-100 text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-gray-800">{flow.presentingBank}</span>
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                    <span className="text-gray-400 font-bold">→</span>
                     <span className="font-bold text-brand-900">{flow.draweeBank}</span>
                   </div>
                   <div className="flex justify-between items-baseline pt-1 border-t border-gray-200">

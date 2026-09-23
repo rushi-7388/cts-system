@@ -74,35 +74,17 @@ export default function PositivePayRegistryModal({ onClose }) {
         className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-gray-100"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b flex items-center justify-between bg-gradient-to-r from-brand-900 to-brand-800 text-white">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-xl border border-white/20">
-              <svg className="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold">Positive Pay System (PPS) Central Registry</h2>
-                <span className="text-[10px] bg-amber-400 text-brand-950 font-bold px-2 py-0.5 rounded-full uppercase">
-                  NPCI / RBI Mandate
-                </span>
-              </div>
-              <p className="text-xs text-brand-200 mt-0.5">
-                Pre-registered drawer confirmations for 5-point automated clearance verification (≥ ₹50,000 threshold).
-              </p>
-            </div>
+        <div className="px-6 py-4 border-b flex items-center justify-between bg-brand-900 text-white">
+          <div>
+            <h2 className="text-base font-bold">Positive Pay System (PPS) Registry</h2>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="text-white/70 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-            title="Close Modal"
+            className="text-xs font-semibold text-slate-300 hover:text-white px-2 py-1 rounded border border-slate-600 hover:bg-white/10 transition-colors cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            Close
           </button>
         </div>
 
@@ -110,30 +92,21 @@ export default function PositivePayRegistryModal({ onClose }) {
         <div className="flex-1 overflow-auto p-6 space-y-6">
           {/* Alerts */}
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-lg flex items-center gap-2">
-              <svg className="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-lg">
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-lg flex items-center gap-2">
-              <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
+            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-lg">
               <span>{successMsg}</span>
             </div>
           )}
 
           {/* Quick Pre-Registration Form */}
           <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-            <div className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Pre-Register New Cheque Confirmation (Drawer Bank Portal)</span>
+            <div className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3">
+              Pre-Register Cheque Confirmation
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
@@ -203,12 +176,9 @@ export default function PositivePayRegistryModal({ onClose }) {
               <button
                 type="button"
                 onClick={loadRecords}
-                className="text-[11px] text-brand-600 hover:text-brand-800 font-semibold flex items-center gap-1 cursor-pointer"
+                className="text-[11px] text-brand-600 hover:text-brand-800 font-semibold cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>Refresh Registry</span>
+                Refresh Registry
               </button>
             </div>
 

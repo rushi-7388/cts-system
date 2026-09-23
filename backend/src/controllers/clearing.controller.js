@@ -36,9 +36,12 @@ async function transitionCheque(req, res) {
   const cheque = await prisma.cheque.findUnique({ where: { id }, include: { presentingBank: true, draweeBank: true } });
   if (!cheque) return res.status(404).json({ error: "Cheque not found" });
 
-  // Only the drawee bank (or admin) can move a cheque through the lifecycle
-  if (req.user.role !== "ADMIN" && cheque.draweeBankId !== req.user.bankId) {
-    return res.status(403).json({ error: "Only the drawee bank can act on this cheque" });
+  // Only authorized clearing roles or participating banks can move a cheque through the lifecycle
+  const hasGlobalClearingAuthority = ["ADMIN", "SETTLEMENT_OFFICER", "BRANCH_MANAGER"].includes(req.user.role);
+  const isPartyBank = cheque.draweeBankId === req.user.bankId || cheque.presentingBankId === req.user.bankId;
+
+  if (!hasGlobalClearingAuthority && !isPartyBank) {
+    return res.status(403).json({ error: "Only the participating banks or authorized clearing officers can act on this cheque" });
   }
 
   // Maker-Checker Rule Enforcement

@@ -19,8 +19,7 @@ export default function SettlementOfficerDashboard() {
         {/* Settlement Desk Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 mb-2">
               National Settlement Desk · RBI e-Kuber RTGS Gateway
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">

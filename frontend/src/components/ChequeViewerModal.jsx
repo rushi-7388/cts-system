@@ -64,19 +64,13 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
 
               {/* Positive Pay Status Badge */}
               {cheque.ppsStatus === "PPS_VERIFIED" && (
-                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                  <svg className="w-3 h-3 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                  </svg>
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   <span>PPS Confirmed</span>
                 </span>
               )}
               {cheque.ppsStatus === "PPS_MISMATCH" && (
-                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse flex items-center gap-1">
-                  <svg className="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>PPS Mismatch Alert!</span>
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                  <span>PPS Mismatch</span>
                 </span>
               )}
               {cheque.ppsStatus === "PPS_NOT_REGISTERED" && Number(cheque.amount) >= 50000 && (
@@ -100,7 +94,7 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                 className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "cheque" ? "bg-white text-gray-900 shadow-xs" : "text-gray-600 hover:text-gray-900"
                   }`}
               >
-                <span>Cheque Canvas</span>
+                <span>Instrument</span>
               </button>
               <button
                 type="button"
@@ -114,21 +108,16 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                       : "text-gray-600 hover:text-gray-900"
                   }`}
               >
-                <span>Signature Verification</span>
-                {isSuspectSig && <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>}
+                <span>Signature</span>
               </button>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg ml-1 flex items-center justify-center cursor-pointer"
-              title="Close Inspector"
-              aria-label="Close Inspector"
+              className="text-xs font-semibold text-gray-500 hover:text-gray-800 px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Close
             </button>
           </div>
         </div>
@@ -152,21 +141,18 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                   <button
                     type="button"
                     onClick={() => setFilterMode("uv")}
-                    className={`px-2.5 py-0.5 rounded transition-colors flex items-center gap-1 ${filterMode === "uv" ? "bg-purple-600 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
+                    className={`px-2.5 py-0.5 rounded transition-colors ${filterMode === "uv" ? "bg-purple-600 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
                       }`}
-                    title="UV Light Simulation (reveals fluorescent security fibers and watermarks)"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-300"></span>
-                    <span>UV Blacklight</span>
+                    UV Filter
                   </button>
                   <button
                     type="button"
                     onClick={() => setFilterMode("invert")}
                     className={`px-2.5 py-0.5 rounded transition-colors ${filterMode === "invert" ? "bg-gray-900 text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
                       }`}
-                    title="Inverted Grayscale (high-contrast for E-13B MICR line validation)"
                   >
-                    Invert MICR
+                    Invert
                   </button>
                 </div>
               </div>
@@ -277,10 +263,8 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                           <span className="text-gray-500 font-mono text-[11px]">A/C No: </span>
                           <span className="font-mono font-bold">{cheque.accountNumber}</span>
                         </div>
-                        <div className="text-[10px] text-gray-400 font-sans text-right flex flex-col items-end">
-                          <svg className="w-24 h-6 text-brand-900" viewBox="0 0 380 90" fill="none" stroke="currentColor" strokeWidth="4">
-                            <path d="M 22 59 Q 49 12, 81 49 T 139 46 T 191 69 Q 219 21, 241 54 T 299 46 Q 329 79, 359 41" />
-                          </svg>
+                        <div className="text-[10px] text-gray-500 font-sans text-right flex flex-col items-end">
+                          <span className="font-serif italic text-sm text-brand-900 font-bold">[Specimen Signatory]</span>
                           <span>Authorized Signatory</span>
                         </div>
                       </div>
@@ -477,24 +461,15 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
         {/* Footer */}
         <div className="px-6 py-3 bg-gray-50 border-t flex flex-wrap items-center justify-between text-xs text-gray-600 gap-2">
           <div className="flex items-center gap-4">
-            <span className="font-semibold text-gray-700">CTS-2010 Audit Compliance:</span>
-            <span className="flex items-center gap-1.5 text-emerald-700">
-              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Paper Fibers Verified</span>
+            <span className="font-semibold text-gray-700">CTS-2010 Compliance:</span>
+            <span className="text-emerald-700 font-medium">
+              [OK] Paper Fibers Verified
             </span>
-            <span className="flex items-center gap-1.5 text-emerald-700">
-              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>E-13B MICR Optical Alignment</span>
+            <span className="text-emerald-700 font-medium">
+              [OK] E-13B MICR Optical Alignment
             </span>
-            <span className="flex items-center gap-1.5 text-emerald-700">
-              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Positive Pay & Signature Verification</span>
+            <span className="text-emerald-700 font-medium">
+              [OK] Positive Pay & Signature Verification
             </span>
           </div>
 

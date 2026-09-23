@@ -71,9 +71,6 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
   if (nextActions.length === 0) {
     return (
       <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
-        <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-        </svg>
         <span>Workflow Complete</span>
       </div>
     );
@@ -83,19 +80,13 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
     <div className={`flex flex-col gap-2 ${layout === "compact" ? "min-w-[200px]" : "w-full"}`}>
       {error && (
         <div className="text-[11px] text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded flex items-center gap-1">
-          <svg className="w-3 h-3 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
           <span className="leading-tight">{error}</span>
         </div>
       )}
 
       {cheque.status === "AWAITING_CHECKER" && (
         <div className="text-[10px] text-purple-800 bg-purple-50 border border-purple-200 px-2 py-1 rounded flex items-center gap-1.5 font-medium">
-          <svg className="w-3.5 h-3.5 text-purple-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <span>4-Eyes Checker Sign-off Required</span>
+          <span>Checker Sign-off Required</span>
         </div>
       )}
 
@@ -107,12 +98,9 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
             type="button"
             disabled={busy}
             onClick={() => transition("VERIFIED")}
-            className="flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+            className="flex-1 inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
             title="Perform Maker verification (routes to Checker if high-value/risk)"
           >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-            </svg>
             <span>{isHighRiskOrValue ? "Verify (Send to Checker)" : "Verify"}</span>
           </button>
         )}
@@ -123,12 +111,12 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
             type="button"
             disabled={busy}
             onClick={() => transition("CLEARED")}
-            className={`flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-xs transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap ${
+            className={`flex-1 inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg text-xs font-bold text-white shadow-xs transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap ${
               cheque.status === "AWAITING_CHECKER"
                 ? "bg-purple-600 hover:bg-purple-700"
                 : "bg-emerald-600 hover:bg-emerald-700"
             }`}
-            title="Approve instrument and trigger instant RBI e-Kuber real-time realization"
+            title="Approve instrument and trigger instant e-Kuber realization"
           >
             <span>{cheque.status === "AWAITING_CHECKER" ? "Authorize & Clear" : "Clear & Settle"}</span>
           </button>
@@ -140,12 +128,9 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
             type="button"
             disabled={busy}
             onClick={() => setShowReturnModal(true)}
-            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+            className="inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
             title="Dishonour instrument and issue statutory return memo"
           >
-            <svg className="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-            </svg>
             <span>Return</span>
           </button>
         )}
@@ -162,25 +147,16 @@ export default function VerificationPanel({ cheque, onUpdated, layout = "compact
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-100 text-left"
           >
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-sm">Statutory Cheque Dishonour</h3>
-                  <p className="text-[11px] text-gray-500">Section 138 Negotiable Instruments Act, 1881</p>
-                </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Statutory Cheque Dishonour</h3>
+                <p className="text-[11px] text-gray-500">Section 138 Negotiable Instruments Act, 1881</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowReturnModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                className="text-xs text-gray-500 hover:text-gray-800 px-2 py-1 rounded hover:bg-gray-100 transition-colors cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                Close
               </button>
             </div>
 

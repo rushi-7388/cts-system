@@ -62,6 +62,31 @@ export default function BatchManagementPanel() {
     }
   }
 
+  async function handleSignBatch(id) {
+    try {
+      const res = await client.post(`/pki/batches/${id}/sign`);
+      setActionMessage(`Batch manifest digitally signed with X.509 Certificate #${res.data.signature.certificate.serialNumber}`);
+      setTimeout(() => setActionMessage(null), 4000);
+    } catch (err) {
+      alert("Failed to digitally sign batch: " + (err.response?.data?.error || err.message));
+    }
+  }
+
+  async function handleVerifyBatchSignature(id) {
+    try {
+      const res = await client.get(`/pki/batches/${id}/verify`);
+      if (res.data.verified) {
+        alert(
+          `✓ PKI Signature VERIFIED\n\nSession: ${res.data.sessionCode}\nSigner: ${res.data.certificate.bankName}\nIssuer: ${res.data.certificate.issuer}\nSerial: ${res.data.certificate.serialNumber}\nDigest: ${res.data.signatureDigest.slice(0, 32)}...`
+        );
+      } else {
+        alert(`Notice: ${res.data.message || "No valid signature found on this batch"}`);
+      }
+    } catch (err) {
+      alert("Signature verification error: " + (err.response?.data?.error || err.message));
+    }
+  }
+
   return (
     <div className="bg-white rounded-xl shadow p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b">
@@ -165,6 +190,22 @@ export default function BatchManagementPanel() {
                         Reconciled
                       </span>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => handleSignBatch(b.id)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-bold px-2 py-1 rounded transition-colors cursor-pointer shadow-2xs"
+                      title="Digitally sign batch manifest using bank X.509 certificate"
+                    >
+                      Sign PKI
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleVerifyBatchSignature(b.id)}
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-1 rounded transition-colors cursor-pointer"
+                      title="Verify X.509 digital signature"
+                    >
+                      Verify
+                    </button>
                   </td>
                 </tr>
               ))}

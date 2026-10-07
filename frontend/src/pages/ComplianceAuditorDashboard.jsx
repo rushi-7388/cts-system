@@ -5,10 +5,12 @@ import FraudFlagsPanel from "../components/FraudFlagsPanel";
 import ISO20022Modal from "../components/ISO20022Modal";
 import ClearanceCertificateModal from "../components/ClearanceCertificateModal";
 import PositivePayRegistryModal from "../components/PositivePayRegistryModal";
+import DisputeManagementPanel from "../components/DisputeManagementPanel";
+import PKICertificatesPanel from "../components/PKICertificatesPanel";
 import client from "../api/client";
 
 export default function ComplianceAuditorDashboard() {
-  const [activeTab, setActiveTab] = useState("ledger"); // "ledger" | "fraud_flags" | "audit_trail"
+  const [activeTab, setActiveTab] = useState("ledger"); // "ledger" | "fraud_flags" | "audit_trail" | "disputes" | "pki_certs"
   const [auditEvents, setAuditEvents] = useState([]);
   const [loadingTrail, setLoadingTrail] = useState(false);
   const [selectedChequeIso, setSelectedChequeIso] = useState(null);
@@ -64,11 +66,11 @@ export default function ComplianceAuditorDashboard() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 gap-2">
+        <div className="flex border-b border-slate-200 gap-2 overflow-x-auto">
           <button
             type="button"
             onClick={() => setActiveTab("ledger")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "ledger"
                 ? "border-amber-600 text-amber-800 bg-amber-50/50 rounded-t-xl"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -80,7 +82,7 @@ export default function ComplianceAuditorDashboard() {
           <button
             type="button"
             onClick={() => setActiveTab("fraud_flags")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "fraud_flags"
                 ? "border-amber-600 text-amber-800 bg-amber-50/50 rounded-t-xl"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -91,8 +93,32 @@ export default function ComplianceAuditorDashboard() {
 
           <button
             type="button"
+            onClick={() => setActiveTab("disputes")}
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "disputes"
+                ? "border-amber-600 text-amber-800 bg-amber-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <span>Clearing Disputes (DRM Rule 32)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("pki_certs")}
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "pki_certs"
+                ? "border-amber-600 text-amber-800 bg-amber-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <span>X.509 PKI Trust & Certificates</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab("audit_trail")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "audit_trail"
                 ? "border-amber-600 text-amber-800 bg-amber-50/50 rounded-t-xl"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -113,6 +139,20 @@ export default function ComplianceAuditorDashboard() {
         {activeTab === "fraud_flags" && (
           <div className="space-y-6">
             <FraudFlagsPanel />
+          </div>
+        )}
+
+        {/* Tab 3: Disputes */}
+        {activeTab === "disputes" && (
+          <div className="space-y-6">
+            <DisputeManagementPanel />
+          </div>
+        )}
+
+        {/* Tab 4: PKI Certificates */}
+        {activeTab === "pki_certs" && (
+          <div className="space-y-6">
+            <PKICertificatesPanel />
           </div>
         )}
 

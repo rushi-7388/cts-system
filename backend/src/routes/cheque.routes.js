@@ -8,6 +8,7 @@ const {
   registerPositivePay,
   listPositivePay,
   getSignatureComparison,
+  getChequeForensics,
   bulkIngestCheques,
 } = require("../controllers/cheque.controller");
 const { authenticate, authorize } = require("../middleware/auth.middleware");
@@ -25,6 +26,7 @@ router.post("/", authorize("PRESENTING_BANK", "BRANCH_MANAGER", "ADMIN"), upload
 router.get("/", listCheques);
 router.get("/:id", getCheque);
 router.get("/:id/signature-comparison", getSignatureComparison);
+router.get("/:id/forensics", getChequeForensics);
 router.get("/:id/iso20022", getChequeIso20022);
 
 module.exports = router;

@@ -1,13 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import Navbar from "../components/Navbar";
-import DevOpsConsole from "../components/DevOpsConsole";
 import client from "../api/client";
+
+const DevOpsConsole = lazy(() => import("../components/DevOpsConsole"));
+const VirtualHSMEnclavePanel = lazy(() => import("../components/VirtualHSMEnclavePanel"));
+const CyberneticWarRoomConsole = lazy(() => import("../components/CyberneticWarRoomConsole"));
+
+function ITPanelLoader() {
+  return (
+    <div className="p-12 flex flex-col items-center justify-center text-slate-400 bg-slate-850 border border-slate-800 rounded-2xl">
+      <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin mb-3" />
+      <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Loading module...</span>
+    </div>
+  );
+}
 
 export default function ITStaffDashboard() {
   const [dbPingMs, setDbPingMs] = useState(null);
   const [systemInfo, setSystemInfo] = useState(null);
   const [telemetryEvents, setTelemetryEvents] = useState([]);
-  const [activeTab, setActiveTab] = useState("sre_hub"); // "sre_hub" | "telemetry" | "metrics_raw"
+  const [activeTab, setActiveTab] = useState("war_room"); // "war_room" | "hsm" | "sre_hub" | "telemetry" | "metrics_raw"
   const [rawMetrics, setRawMetrics] = useState("");
   const [loadingMetrics, setLoadingMetrics] = useState(false);
 
@@ -85,11 +97,35 @@ export default function ITStaffDashboard() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-slate-800 gap-2">
+        <div className="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab("war_room")}
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "war_room"
+                ? "border-cyan-500 text-cyan-400 bg-cyan-950/30 rounded-t-xl"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <span>🌐 Cybernetic War Room & DC Failover</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("hsm")}
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "hsm"
+                ? "border-purple-500 text-purple-400 bg-purple-950/30 rounded-t-xl"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <span>🛡️ Virtual HSM & M-of-N Key Ceremony</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setActiveTab("sre_hub")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "sre_hub"
                 ? "border-emerald-500 text-emerald-400 bg-emerald-950/30 rounded-t-xl"
                 : "border-transparent text-slate-400 hover:text-slate-200"
@@ -101,7 +137,7 @@ export default function ITStaffDashboard() {
           <button
             type="button"
             onClick={() => setActiveTab("telemetry")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "telemetry"
                 ? "border-emerald-500 text-emerald-400 bg-emerald-950/30 rounded-t-xl"
                 : "border-transparent text-slate-400 hover:text-slate-200"
@@ -121,7 +157,7 @@ export default function ITStaffDashboard() {
               setActiveTab("metrics_raw");
               fetchRawMetrics();
             }}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "metrics_raw"
                 ? "border-emerald-500 text-emerald-400 bg-emerald-950/30 rounded-t-xl"
                 : "border-transparent text-slate-400 hover:text-slate-200"
@@ -131,12 +167,28 @@ export default function ITStaffDashboard() {
           </button>
         </div>
 
-        {/* Tab 1: DevOps & Chaos Console */}
-        {activeTab === "sre_hub" && (
-          <div className="space-y-6">
-            <DevOpsConsole />
-          </div>
-        )}
+        <Suspense fallback={<ITPanelLoader />}>
+          {/* Tab 1: National War Room & DC Failover */}
+          {activeTab === "war_room" && (
+            <div className="space-y-6">
+              <CyberneticWarRoomConsole />
+            </div>
+          )}
+
+          {/* Tab 2: Virtual HSM Enclave & M-of-N Key Ceremony */}
+          {activeTab === "hsm" && (
+            <div className="space-y-6">
+              <VirtualHSMEnclavePanel />
+            </div>
+          )}
+
+          {/* Tab 3: DevOps & Chaos Console */}
+          {activeTab === "sre_hub" && (
+            <div className="space-y-6">
+              <DevOpsConsole />
+            </div>
+          )}
+        </Suspense>
 
         {/* Tab 2: Exception Telemetry Stream */}
         {activeTab === "telemetry" && (

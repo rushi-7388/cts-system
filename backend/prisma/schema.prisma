@@ -49,6 +49,12 @@ model Bank {
   draweeCheques      Cheque[]            @relation("DraweeBank")
   positivePayRecords PositivePayRecord[]
 
+  // Intraday Liquidity, DRM Disputes & PKI Relations
+  liquidityPool       LiquidityPool?
+  digitalCertificates DigitalCertificate[]
+  initiatedDisputes   DisputeClaim[]       @relation("InitiatedDisputes")
+  respondentDisputes  DisputeClaim[]       @relation("RespondentDisputes")
+
   createdAt DateTime @default(now())
 }
 
@@ -66,6 +72,11 @@ model User {
   uploadedCheques Cheque[]        @relation("UploadedBy")
   actedEvents     ClearingEvent[] @relation("ActedBy")
 
+  // Dispute Governance Relations
+  filedDisputes    DisputeClaim[]    @relation("FiledDisputes")
+  resolvedDisputes DisputeClaim[]    @relation("ResolvedDisputes")
+  disputeLogs      DisputeAuditLog[]
+
   createdAt DateTime @default(now())
 }
 
@@ -78,6 +89,16 @@ model Batch {
   totalAmount Decimal     @default(0) @db.Decimal(14, 2)
   cheques     Cheque[]
   closedAt    DateTime?
+
+  // Clearing Cutoff Windows & Two-Way Reconciliation
+  windowType           String?               @default("STANDARD_CYCLE")
+  cutoffAt             DateTime?
+  reconciledAt         DateTime?
+  discrepancyCount     Int                   @default(0)
+  discrepancyAmount    Decimal               @default(0) @db.Decimal(14, 2)
+  reconciliationReport Json?
+  signatures           BatchSignatureAudit[]
+
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -136,6 +157,10 @@ model Cheque {
 
   events     ClearingEvent[]
   fraudFlags FraudFlag[]
+  disputes   DisputeClaim[]
+
+  // Intraday Liquidity Reservation
+  liquidityReservationRef String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -229,3 +254,148 @@ model PositivePayRecord {
 
   @@unique([accountNumber, chequeNumber])
 }
+
+// ============================================================================
+// 1. Central Bank Intraday Liquidity & Collateral Reservation System (LMS)
+// ============================================================================
+enum LiquidityStatus {
+  HEALTHY
+  WARNING
+  BREACHED
+  BLOCKED
+}
+
+enum LiquidityEventType {
+  COLLATERAL_DEPOSIT
+  EXPOSURE_INCREASE
+  EXPOSURE_RELEASE
+  SETTLEMENT_SETTLE
+  LIMIT_BREACH
+}
+
+model LiquidityPool {
+  id                      String          @id @default(uuid())
+  bankId                  String          @unique
+  bank                    Bank            @relation(fields: [bankId], references: [id])
+  allocatedCollateral     Decimal         @default(10000000.00) @db.Decimal(14, 2)
+  creditLine              Decimal         @default(2000000.00) @db.Decimal(14, 2)
+  currentExposure         Decimal         @default(0.00) @db.Decimal(14, 2)
+  reservedAmount          Decimal         @default(0.00) @db.Decimal(14, 2)
+  warningThresholdPercent Float           @default(80.0)
+  breachThresholdPercent  Float           @default(95.0)
+  status                  LiquidityStatus @default(HEALTHY)
+
+  events                  LiquidityEvent[]
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+}
+
+model LiquidityEvent {
+  id                      String             @id @default(uuid())
+  poolId                  String
+  pool                    LiquidityPool      @relation(fields: [poolId], references: [id])
+  eventType               LiquidityEventType
+  amount                  Decimal            @db.Decimal(14, 2)
+  utilizationPercentAfter Float
+  referenceId             String?
+  remarks                 String?
+  createdAt               DateTime           @default(now())
+}
+
+// ============================================================================
+// 2. Clearing Dispute Resolution & Chargeback Engine (NPCI CTS DRM)
+// ============================================================================
+enum DisputeType {
+  UNAUTHORIZED_DEBIT
+  AMOUNT_MISMATCH
+  DUPLICATE_PRESENTATION
+  LATE_RETURN
+  FORGED_SIGNATURE
+  PPS_BREACH
+}
+
+enum DisputeStatus {
+  FILED
+  UNDER_REVIEW
+  EVIDENCE_REQUESTED
+  RESOLVED_CLAIMANT
+  RESOLVED_RESPONDENT
+  ESCALATED_RBI_OMBUDSMAN
+  CLOSED
+}
+
+model DisputeClaim {
+  id                String         @id @default(uuid())
+  claimNumber       String         @unique
+  chequeId          String
+  cheque            Cheque         @relation(fields: [chequeId], references: [id])
+  initiatingBankId  String
+  initiatingBank    Bank           @relation("InitiatedDisputes", fields: [initiatingBankId], references: [id])
+  respondentBankId  String
+  respondentBank    Bank           @relation("RespondentDisputes", fields: [respondentBankId], references: [id])
+  disputeType       DisputeType
+  claimAmount       Decimal        @db.Decimal(12, 2)
+  status            DisputeStatus  @default(FILED)
+  filedById         String
+  filedBy           User           @relation("FiledDisputes", fields: [filedById], references: [id])
+  resolvedById      String?
+  resolvedBy        User?          @relation("ResolvedDisputes", fields: [resolvedById], references: [id])
+  evidenceNotes     String
+  resolutionSummary String?
+  slaDeadline       DateTime
+  logs              DisputeAuditLog[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model DisputeAuditLog {
+  id          String         @id @default(uuid())
+  disputeId   String
+  dispute     DisputeClaim   @relation(fields: [disputeId], references: [id])
+  actorId     String?
+  actor       User?          @relation(fields: [actorId], references: [id])
+  fromStatus  DisputeStatus?
+  toStatus    DisputeStatus
+  actionNotes String?
+  createdAt   DateTime       @default(now())
+}
+
+// ============================================================================
+// 3. Public Key Infrastructure (PKI) & Digital Signature Registry
+// ============================================================================
+enum CertificateStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+model DigitalCertificate {
+  id              String                @id @default(uuid())
+  bankId          String
+  bank            Bank                  @relation(fields: [bankId], references: [id])
+  certThumbprint  String                @unique
+  serialNumber    String                @unique
+  issuer          String                @default("CTS National PKI Root Trust CA")
+  subject         String
+  validFrom       DateTime
+  validTo         DateTime
+  status          CertificateStatus     @default(ACTIVE)
+  keyAlgorithm    String                @default("RSA-4096 / SHA-256")
+  batchSignatures BatchSignatureAudit[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+}
+
+model BatchSignatureAudit {
+  id                String             @id @default(uuid())
+  batchId           String
+  batch             Batch              @relation(fields: [batchId], references: [id])
+  certificateId     String
+  certificate       DigitalCertificate @relation(fields: [certificateId], references: [id])
+  signatureDigest   String
+  payloadDigest     String
+  verified          Boolean            @default(true)
+  verificationNotes String?
+  signedAt          DateTime           @default(now())
+}
+

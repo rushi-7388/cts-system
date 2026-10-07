@@ -15,6 +15,16 @@ const batchRoutes = require("./routes/batch.routes");
 const devopsRoutes = require("./routes/devops.routes");
 const branchRoutes = require("./routes/branch.routes");
 const rbacRoutes = require("./routes/rbac.routes");
+const liquidityRoutes = require("./routes/liquidity.routes");
+const disputeRoutes = require("./routes/dispute.routes");
+const pkiRoutes = require("./routes/pki.routes");
+const reconciliationRoutes = require("./routes/reconciliation.routes");
+const hsmRoutes = require("./routes/hsm.routes");
+const datacenterRoutes = require("./routes/datacenter.routes");
+const swarmRoutes = require("./routes/swarm.routes");
+const zkpRoutes = require("./routes/zkp.routes");
+const smartchequeRoutes = require("./routes/smartcheque.routes");
+const crossborderRoutes = require("./routes/crossborder.routes");
 
 const app = express();
 
@@ -48,6 +58,18 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/batches", batchRoutes);
 app.use("/api/branch", branchRoutes);
 app.use("/api/rbac", rbacRoutes);
+app.use("/api/liquidity", liquidityRoutes);
+app.use("/api/disputes", disputeRoutes);
+app.use("/api/pki", pkiRoutes);
+app.use("/api/reconciliation", reconciliationRoutes);
+app.use("/api/hsm", hsmRoutes);
+app.use("/api/datacenter", datacenterRoutes);
+app.use("/api/swarm", swarmRoutes);
+app.use("/api/zkp", zkpRoutes);
+app.use("/api/smart-cheques", smartchequeRoutes);
+app.use("/api/crossborder", crossborderRoutes);
+
+
 
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 

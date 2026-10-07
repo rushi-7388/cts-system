@@ -7,6 +7,7 @@ const { generatePacs002Xml } = require("../utils/iso20022.util");
 const { recordChainedEvent } = require("../utils/ledger.util");
 const { broadcastEvent } = require("../utils/sse.util");
 const { generateSignatureVectors } = require("../utils/signature.util");
+const { generateForensicAnalysis } = require("../utils/forensics.util");
 
 // AI / OCR scanning endpoint for auto-extraction
 async function scanOcrCheque(req, res) {
@@ -451,6 +452,20 @@ async function bulkIngestCheques(req, res) {
   }
 }
 
+async function getChequeForensics(req, res) {
+  try {
+    const cheque = await prisma.cheque.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!cheque) return res.status(404).json({ error: "Cheque not found" });
+
+    const forensics = generateForensicAnalysis(cheque);
+    return res.json(forensics);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to generate forensic analysis" });
+  }
+}
+
 module.exports = {
   scanOcrCheque,
   createCheque,
@@ -460,5 +475,6 @@ module.exports = {
   registerPositivePay,
   listPositivePay,
   getSignatureComparison,
+  getChequeForensics,
   bulkIngestCheques,
 };

@@ -167,6 +167,20 @@ const itChaosEventsTotal = new client.Counter({
   registers: [register],
 });
 
+const disputesFiledTotal = new client.Counter({
+  name: "cts_disputes_filed_total",
+  help: "Total clearing dispute claims registered under NPCI CTS DRM framework",
+  labelNames: ["dispute_type", "initiating_bank"],
+  registers: [register],
+});
+
+const pkiSignaturesVerifiedTotal = new client.Counter({
+  name: "cts_pki_signatures_verified_total",
+  help: "Total X.509 PKI digital signatures verified on clearing manifests",
+  labelNames: ["status"],
+  registers: [register],
+});
+
 module.exports = {
   register,
   getPrometheusMetrics,
@@ -185,4 +199,6 @@ module.exports = {
   auditVerificationsTotal,
   settlementCyclesTotal,
   itChaosEventsTotal,
+  disputesFiledTotal,
+  pkiSignaturesVerifiedTotal,
 };

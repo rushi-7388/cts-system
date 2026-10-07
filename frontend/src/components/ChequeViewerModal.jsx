@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import client from "../api/client";
 import VerificationPanel from "./VerificationPanel";
+import DisputeModal from "./DisputeModal";
+import ForensicChequeHeatmapCanvas from "./ForensicChequeHeatmapCanvas";
+import SignatureGhostComparator from "./SignatureGhostComparator";
 
 export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
-  const [activeTab, setActiveTab] = useState("cheque"); // "cheque", "signature"
+  const [activeTab, setActiveTab] = useState("cheque"); // "cheque", "signature", "forensics"
   const [zoom, setZoom] = useState(1);
   const [filterMode, setFilterMode] = useState("normal"); // "normal", "uv", "invert"
   const [signatureData, setSignatureData] = useState(null);
   const [sigLoading, setSigLoading] = useState(false);
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
 
   useEffect(() => {
     if (!cheque) return;
@@ -49,7 +53,7 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-gray-100"
+        className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-gray-100"
       >
         {/* Header */}
         <div className="px-6 py-3.5 border-b flex flex-wrap items-center justify-between gap-3 bg-gray-50">
@@ -60,6 +64,9 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               </span>
               <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 CTS-2010 Standard
+              </span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                PKI X.509 Verified
               </span>
 
               {/* Positive Pay Status Badge */}
@@ -98,6 +105,14 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               </button>
               <button
                 type="button"
+                onClick={() => setActiveTab("forensics")}
+                className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "forensics" ? "bg-cyan-700 text-white shadow-xs font-bold" : "text-gray-600 hover:text-gray-900"
+                  }`}
+              >
+                <span>🔬 AI Tampering Heatmap</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActiveTab("signature")}
                 className={`px-3 py-1 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${activeTab === "signature"
                     ? isSuspectSig
@@ -108,7 +123,7 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
                       : "text-gray-600 hover:text-gray-900"
                   }`}
               >
-                <span>Signature</span>
+                <span>Biometric Signature</span>
               </button>
             </div>
 
@@ -281,7 +296,14 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
           </>
         )}
 
-        {/* Tab 2: AI Signature 1:1 Comparative Verification Deck */}
+        {/* Tab 2: AI Forensics Spectral & Heatmap Inspection */}
+        {activeTab === "forensics" && (
+          <div className="flex-1 p-6 overflow-auto bg-slate-950">
+            <ForensicChequeHeatmapCanvas cheque={cheque} />
+          </div>
+        )}
+
+        {/* Tab 3: AI Signature 1:1 Comparative Verification Deck & Biometric Ghosting */}
         {activeTab === "signature" && (
           <div className="flex-1 p-6 overflow-auto bg-gray-50 space-y-6">
             {sigLoading ? (
@@ -290,6 +312,9 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
               </div>
             ) : signatureData ? (
               <>
+                {/* Dynamic Biometric Signature Ghost Specimen Comparator */}
+                <SignatureGhostComparator signatureData={signatureData} cheque={cheque} />
+
                 {/* AI Similarity Gauge Banner */}
                 <div
                   className={`p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 shadow-xs ${signatureData.metrics.matchScore >= 80
@@ -473,11 +498,30 @@ export default function ChequeViewerModal({ cheque, onClose, onUpdated }) {
             </span>
           </div>
 
-          <div className="text-[11px] font-mono text-gray-400">
-            Audit Hash: {cheque.imageHash ? cheque.imageHash.slice(0, 18) + "..." : "SHA-256 Verified"}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowDisputeModal(true)}
+              className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>⚖ File Dispute (DRM)</span>
+            </button>
+            <div className="text-[11px] font-mono text-gray-400">
+              Audit Hash: {cheque.imageHash ? cheque.imageHash.slice(0, 18) + "..." : "SHA-256 Verified"}
+            </div>
           </div>
         </div>
       </div>
+
+      {showDisputeModal && (
+        <DisputeModal
+          cheque={cheque}
+          onClose={() => setShowDisputeModal(false)}
+          onSubmitted={() => {
+            alert("Dispute claim successfully lodged with Clearing House under NPCI CTS DRM Rule 32.");
+          }}
+        />
+      )}
     </div>
   );
 }

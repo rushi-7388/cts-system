@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import SettlementSummary from "../components/SettlementSummary";
 import ContinuousClearingConsole from "../components/ContinuousClearingConsole";
+import LiquidityConsole from "../components/LiquidityConsole";
+import SessionReconciliationConsole from "../components/SessionReconciliationConsole";
 import { useClearingEvents } from "../hooks/useClearingEvents";
 
 export default function SettlementOfficerDashboard() {
-  const [activeTab, setActiveTab] = useState("mns_grid"); // "mns_grid" | "ekuber_continuous"
+  const [activeTab, setActiveTab] = useState("mns_grid"); // "mns_grid" | "ekuber_continuous" | "liquidity_lms" | "session_reconciliation"
 
   useClearingEvents(() => {
     // Live updates trigger refetches inside components
@@ -32,11 +34,11 @@ export default function SettlementOfficerDashboard() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-slate-200 gap-2">
+        <div className="flex border-b border-slate-200 gap-2 overflow-x-auto">
           <button
             type="button"
             onClick={() => setActiveTab("mns_grid")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "mns_grid"
                 ? "border-cyan-600 text-cyan-800 bg-cyan-50/50 rounded-t-xl"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -48,13 +50,37 @@ export default function SettlementOfficerDashboard() {
           <button
             type="button"
             onClick={() => setActiveTab("ekuber_continuous")}
-            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === "ekuber_continuous"
                 ? "border-cyan-600 text-cyan-800 bg-cyan-50/50 rounded-t-xl"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             <span>RBI e-Kuber Continuous Realization</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("liquidity_lms")}
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "liquidity_lms"
+                ? "border-cyan-600 text-cyan-800 bg-cyan-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <span>Intraday Liquidity & Collateral (LMS)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("session_reconciliation")}
+            className={`py-3 px-5 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "session_reconciliation"
+                ? "border-cyan-600 text-cyan-800 bg-cyan-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <span>Clearing Cutoff & Two-Way Reconcilement</span>
           </button>
         </div>
 
@@ -69,6 +95,20 @@ export default function SettlementOfficerDashboard() {
         {activeTab === "ekuber_continuous" && (
           <div className="space-y-6">
             <ContinuousClearingConsole />
+          </div>
+        )}
+
+        {/* Tab 3: Intraday Liquidity & Collateral Management */}
+        {activeTab === "liquidity_lms" && (
+          <div className="space-y-6">
+            <LiquidityConsole />
+          </div>
+        )}
+
+        {/* Tab 4: Session Cutoff & Reconcilement */}
+        {activeTab === "session_reconciliation" && (
+          <div className="space-y-6">
+            <SessionReconciliationConsole />
           </div>
         )}
       </main>

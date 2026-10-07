@@ -60,6 +60,10 @@ jobs:
           DATABASE_URL: "postgresql://cts:cts_password@localhost:5432/cts_system?schema=public"
         run: node prisma/seed.js
 
+      - name: Run Core Features Unit Diagnostic
+        working-directory: ./backend
+        run: npm test
+
       - name: Execute Standalone DB Health Diagnostic
         env:
           DATABASE_URL: "postgresql://cts:cts_password@localhost:5432/cts_system?schema=public"

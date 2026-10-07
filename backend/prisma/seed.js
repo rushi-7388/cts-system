@@ -205,7 +205,65 @@ async function main() {
     },
   });
 
-  console.log("Seed complete.");
+  // Seed Central Bank Intraday Liquidity Pools
+  await prisma.liquidityPool.upsert({
+    where: { bankId: bankA.id },
+    update: {},
+    create: {
+      bankId: bankA.id,
+      allocatedCollateral: 15000000.0, // ₹1.5 Crore
+      creditLine: 3000000.0, // ₹30 Lakhs
+      currentExposure: 150000.0,
+      status: "HEALTHY",
+    },
+  });
+
+  await prisma.liquidityPool.upsert({
+    where: { bankId: bankB.id },
+    update: {},
+    create: {
+      bankId: bankB.id,
+      allocatedCollateral: 20000000.0, // ₹2.0 Crore
+      creditLine: 5000000.0, // ₹50 Lakhs
+      currentExposure: 450000.0,
+      status: "HEALTHY",
+    },
+  });
+
+  // Seed X.509 PKI Digital Signature Certificates
+  await prisma.digitalCertificate.upsert({
+    where: { certThumbprint: "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0" },
+    update: {},
+    create: {
+      bankId: bankA.id,
+      certThumbprint: "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0",
+      serialNumber: "CTS-PKI-SNB-2026-001",
+      issuer: "CTS National PKI Root Trust CA",
+      subject: "CN=Surat Bank CTS Presentation Signer, OU=Digital Clearing, O=Surat Bank, C=IN",
+      validFrom: new Date(),
+      validTo: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      status: "ACTIVE",
+      keyAlgorithm: "RSA-4096 / SHA-256",
+    },
+  });
+
+  await prisma.digitalCertificate.upsert({
+    where: { certThumbprint: "f0e1d2c3b4a5968778695a4b3c2d1e0f0123456789abcdef0123456789abcdef1" },
+    update: {},
+    create: {
+      bankId: bankB.id,
+      certThumbprint: "f0e1d2c3b4a5968778695a4b3c2d1e0f0123456789abcdef0123456789abcdef1",
+      serialNumber: "CTS-PKI-HDB-2026-002",
+      issuer: "CTS National PKI Root Trust CA",
+      subject: "CN=Horizon Digital Bank CTS Authorization Signer, OU=Inward Operations, O=Horizon Digital Bank, C=IN",
+      validFrom: new Date(),
+      validTo: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      status: "ACTIVE",
+      keyAlgorithm: "RSA-4096 / SHA-256",
+    },
+  });
+
+  console.log("Seed complete with Intraday Liquidity Pools and PKI Certificates.");
   console.log("Login with password123 for:");
   console.log("- presenting@snb.com (Clerk - Presenting)");
   console.log("- drawee@hdb.com (Verifier - Drawee Maker)");

@@ -7,6 +7,7 @@ const {
   ekuberRealizationsTotal,
   settlementVolumeInrTotal,
 } = require("../utils/metrics.util");
+const liquidityService = require("../services/liquidity.service");
 
 // Valid state machine transitions
 const TRANSITIONS = {
@@ -95,6 +96,13 @@ async function transitionCheque(req, res) {
   };
 
   if (effectiveTargetStatus === "CLEARED") {
+    // 1. Commit Central Bank Intraday Collateral & Liquidity Exposure Debit
+    try {
+      await liquidityService.commitSettlementDebit(cheque.draweeBankId, cheque.id, cheque.amount);
+    } catch (liqErr) {
+      console.warn("Intraday liquidity accounting notice:", liqErr.message);
+    }
+
     ekuberReceipt = executeContinuousRealization({
       cheque,
       presentingBank: cheque.presentingBank,

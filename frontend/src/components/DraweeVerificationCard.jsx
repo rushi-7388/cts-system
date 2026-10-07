@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import VerificationPanel from "./VerificationPanel";
 import RiskBadge from "./RiskBadge";
+import AgentSwarmDocketModal from "./AgentSwarmDocketModal";
+import ZkSolvencyProofModal from "./ZkSolvencyProofModal";
+import SmartChequeEscrowModal from "./SmartChequeEscrowModal";
+import CrossBorderClearingModal from "./CrossBorderClearingModal";
 
 export default function DraweeVerificationCard({
   cheque,
@@ -9,7 +13,13 @@ export default function DraweeVerificationCard({
   onViewReturnMemo,
   onUpdated,
 }) {
+  const [showSwarmDocket, setShowSwarmDocket] = useState(false);
+  const [showZkModal, setShowZkModal] = useState(false);
+  const [showSmartModal, setShowSmartModal] = useState(false);
+  const [showCrossBorderModal, setShowCrossBorderModal] = useState(false);
   const isHighRiskOrValue = Number(cheque.amount) >= 100000 || cheque.riskTier === "HIGH";
+
+
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between">
@@ -162,7 +172,7 @@ export default function DraweeVerificationCard({
 
       {/* Card Action Deck */}
       <div className="p-4 bg-gray-50 border-t border-gray-100 flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Inspector Trigger */}
           <button
             type="button"
@@ -173,12 +183,52 @@ export default function DraweeVerificationCard({
             <span>Inspect Instrument</span>
           </button>
 
+          {/* Autonomous AI Swarm Trigger */}
+          <button
+            type="button"
+            onClick={() => setShowSwarmDocket(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-indigo-900 to-slate-900 hover:from-indigo-800 hover:to-slate-800 text-indigo-200 text-xs font-bold border border-indigo-700/60 shadow-xs transition-all cursor-pointer"
+            title="Launch 4-Agent Autonomous Swarm Adjudication Docket"
+          >
+            <span>🤖 Swarm</span>
+          </button>
+
+          {/* Option 1: zk-SNARK Solvency Proof */}
+          <button
+            type="button"
+            onClick={() => setShowZkModal(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-950 hover:bg-teal-900 text-teal-300 text-xs font-bold border border-teal-800 shadow-xs transition-all cursor-pointer"
+            title="Zero-Knowledge Confidential Solvency Proof (Groth16)"
+          >
+            <span>🔐 zk-Proof</span>
+          </button>
+
+          {/* Option 2: Smart Cheque Escrow & CBDC */}
+          <button
+            type="button"
+            onClick={() => setShowSmartModal(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-950 hover:bg-amber-900 text-amber-300 text-xs font-bold border border-amber-800 shadow-xs transition-all cursor-pointer"
+            title="Programmable Smart Escrow & CBDC e-Rupee Bridge"
+          >
+            <span>⚡ Smart Cheque</span>
+          </button>
+
+          {/* Option 3: Cross-Border FX & Sanctions */}
+          <button
+            type="button"
+            onClick={() => setShowCrossBorderModal(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 text-xs font-bold border border-cyan-800 shadow-xs transition-all cursor-pointer"
+            title="Cross-Border FX Hedging & Sanctions Radar"
+          >
+            <span>🌐 FX</span>
+          </button>
+
           {/* Statutory tools if already final */}
           {cheque.status === "RETURNED" && (
             <button
               type="button"
               onClick={() => onViewReturnMemo(cheque.id)}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
             >
               <span>Return Memo (Sec 138)</span>
             </button>
@@ -192,6 +242,39 @@ export default function DraweeVerificationCard({
           </div>
         )}
       </div>
+
+      {showSwarmDocket && (
+        <AgentSwarmDocketModal
+          cheque={cheque}
+          onClose={() => setShowSwarmDocket(false)}
+          onActionSuccess={() => {
+            if (onUpdated) onUpdated();
+          }}
+        />
+      )}
+
+      {showZkModal && (
+        <ZkSolvencyProofModal
+          cheque={cheque}
+          onClose={() => setShowZkModal(false)}
+        />
+      )}
+
+      {showSmartModal && (
+        <SmartChequeEscrowModal
+          cheque={cheque}
+          onClose={() => setShowSmartModal(false)}
+        />
+      )}
+
+      {showCrossBorderModal && (
+        <CrossBorderClearingModal
+          cheque={cheque}
+          onClose={() => setShowCrossBorderModal(false)}
+        />
+      )}
     </div>
   );
 }
+
+

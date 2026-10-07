@@ -1,4 +1,4 @@
-# CTS — Enterprise Cheque Truncation & SRE Clearing Platform
+# CTS-Enterprise Cheque Truncation & SRE Clearing Platform
 
 [![CI/CD Pipeline](https://github.com/rushi-7388/cts-system/actions/workflows/ci.yml/badge.svg)](https://github.com/rushi-7388/cts-system/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -351,6 +351,28 @@ All pre-seeded demo accounts share the password: **`password123`**
 - `GET /api/devops/sre-metrics` — Aggregated SLO availability, error budget, and percentiles.
 - `POST /api/devops/chaos/toggle` — Inject/clear synthetic latency, error storms, or circuit breaks.
 - `POST /api/telemetry/report` — Client error boundary telemetry collection.
+
+### Intraday Liquidity Management (LMS)
+- `GET /api/liquidity/status` — Current bank collateral capacity, headroom, and utilization percent.
+- `GET /api/liquidity/summary` — Central bank interbank liquidity and exposure overview.
+- `POST /api/liquidity/collateral` — Allocate central bank collateral / credit lines.
+
+### Clearing Dispute Resolution Mechanism (NPCI DRM)
+- `POST /api/disputes` — Register clearing dispute / chargeback claim (with 72h statutory SLA).
+- `GET /api/disputes` — List active dispute claims with audit history.
+- `GET /api/disputes/:id` — Retrieve dispute claim details, evidence notes, and SLA status.
+- `PATCH /api/disputes/:id/status` — Adjudicate dispute claim (`RESOLVED_CLAIMANT`, `RESOLVED_RESPONDENT`, `ESCALATED_RBI_OMBUDSMAN`).
+
+### Public Key Infrastructure (PKI) & Digital Signatures
+- `GET /api/pki/certificates` — List registered X.509 digital certificates.
+- `POST /api/pki/certificates` — Register bank X.509 certificate with CTS CA.
+- `POST /api/pki/batches/:batchId/sign` — Digitally sign clearing batch manifest.
+- `GET /api/pki/batches/:batchId/verify` — Cryptographically verify batch digital signature.
+
+### Clearing Session Cutoff & Two-Way Reconciliation
+- `GET /api/reconciliation/batches/:batchId/cutoff` — Inspect session cutoff timer and countdown status.
+- `POST /api/reconciliation/batches/:batchId/cutoff` — Configure cutoff window timers.
+- `POST /api/reconciliation/batches/:batchId/reconcile` — Execute two-way multilateral reconciliation.
 
 ---
 

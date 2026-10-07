@@ -1,13 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import Navbar from "../components/Navbar";
 import SettlementSummary from "../components/SettlementSummary";
 import ContinuousClearingConsole from "../components/ContinuousClearingConsole";
 import FraudFlagsPanel from "../components/FraudFlagsPanel";
-import BatchManagementPanel from "../components/BatchManagementPanel";
-import DevOpsConsole from "../components/DevOpsConsole";
-import AnalyticsDashboard from "../components/AnalyticsDashboard";
-import LedgerIntegrityPanel from "../components/LedgerIntegrityPanel";
 import client from "../api/client";
+
+const BatchManagementPanel = lazy(() => import("../components/BatchManagementPanel"));
+const DevOpsConsole = lazy(() => import("../components/DevOpsConsole"));
+const AnalyticsDashboard = lazy(() => import("../components/AnalyticsDashboard"));
+const LedgerIntegrityPanel = lazy(() => import("../components/LedgerIntegrityPanel"));
+const VirtualHSMEnclavePanel = lazy(() => import("../components/VirtualHSMEnclavePanel"));
+const CyberneticWarRoomConsole = lazy(() => import("../components/CyberneticWarRoomConsole"));
+
+function TabLoader() {
+  return (
+    <div className="p-12 flex flex-col items-center justify-center text-slate-400 bg-white rounded-2xl border border-gray-100 shadow-xs">
+      <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin mb-3" />
+      <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Loading module...</span>
+    </div>
+  );
+}
 
 function StatCard({ label, value, color }) {
   return (
@@ -19,7 +31,7 @@ function StatCard({ label, value, color }) {
 }
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("operations"); // "operations", "batches", "analytics", "ledger", "devops"
+  const [activeTab, setActiveTab] = useState("operations"); // "operations", "batches", "analytics", "ledger", "war_room", "hsm", "devops"
   const [stats, setStats] = useState(null);
   const [events, setEvents] = useState([]);
 
@@ -73,6 +85,26 @@ export default function AdminDashboard() {
                 }`}
             >
               Sessions
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("war_room")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${activeTab === "war_room"
+                  ? "bg-cyan-700 text-white shadow-xs font-bold"
+                  : "text-gray-600 hover:text-gray-900"
+                }`}
+            >
+              🌐 War Room (DC Failover)
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("hsm")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${activeTab === "hsm"
+                  ? "bg-purple-700 text-white shadow-xs font-bold"
+                  : "text-gray-600 hover:text-gray-900"
+                }`}
+            >
+              🛡️ Virtual HSM
             </button>
             <button
               type="button"
@@ -148,33 +180,49 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Tab 2: Clearing Sessions & Batches */}
-        {activeTab === "batches" && (
-          <div className="animate-in fade-in duration-150">
-            <BatchManagementPanel />
-          </div>
-        )}
+        <Suspense fallback={<TabLoader />}>
+          {/* Tab 2: Clearing Sessions & Batches */}
+          {activeTab === "batches" && (
+            <div className="animate-in fade-in duration-150">
+              <BatchManagementPanel />
+            </div>
+          )}
 
-        {/* Tab 3: Financial Intelligence & Velocity Analytics */}
-        {activeTab === "analytics" && (
-          <div className="animate-in fade-in duration-150">
-            <AnalyticsDashboard />
-          </div>
-        )}
+          {/* Tab 3: Financial Intelligence & Velocity Analytics */}
+          {activeTab === "analytics" && (
+            <div className="animate-in fade-in duration-150">
+              <AnalyticsDashboard />
+            </div>
+          )}
 
-        {/* Tab 4: Cryptographic Blockchain Audit Ledger */}
-        {activeTab === "ledger" && (
-          <div className="animate-in fade-in duration-150">
-            <LedgerIntegrityPanel />
-          </div>
-        )}
+          {/* Tab 4: Cryptographic Blockchain Audit Ledger */}
+          {activeTab === "ledger" && (
+            <div className="animate-in fade-in duration-150">
+              <LedgerIntegrityPanel />
+            </div>
+          )}
 
-        {/* Tab 5: DevOps & SRE Console */}
-        {activeTab === "devops" && (
-          <div className="animate-in fade-in duration-150">
-            <DevOpsConsole />
-          </div>
-        )}
+          {/* Tab 5: National War Room & DC Failover */}
+          {activeTab === "war_room" && (
+            <div className="animate-in fade-in duration-150">
+              <CyberneticWarRoomConsole />
+            </div>
+          )}
+
+          {/* Tab 6: Virtual HSM & M-of-N Key Ceremony */}
+          {activeTab === "hsm" && (
+            <div className="animate-in fade-in duration-150">
+              <VirtualHSMEnclavePanel />
+            </div>
+          )}
+
+          {/* Tab 7: DevOps & SRE Console */}
+          {activeTab === "devops" && (
+            <div className="animate-in fade-in duration-150">
+              <DevOpsConsole />
+            </div>
+          )}
+        </Suspense>
       </div>
     </div>
   );

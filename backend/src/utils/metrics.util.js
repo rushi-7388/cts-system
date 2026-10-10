@@ -181,6 +181,89 @@ const pkiSignaturesVerifiedTotal = new client.Counter({
   registers: [register],
 });
 
+// 7. Phase 1: Tarjan Intraday Liquidity Savings Mechanism (LSM)
+const lsmCyclesResolvedTotal = new client.Counter({
+  name: "cts_lsm_gridlock_cycles_resolved_total",
+  help: "Total Tarjan strongly connected components / gridlock cycles cleared by LSM",
+  labelNames: ["algorithm"], // tarjan_scc, bilateral_fifo
+  registers: [register],
+});
+
+const lsmLiquidityUnlockedInrTotal = new client.Counter({
+  name: "cts_lsm_liquidity_unlocked_inr_total",
+  help: "Total cumulative liquidity savings unlocked via multilateral netting in INR",
+  labelNames: ["batch_type"],
+  registers: [register],
+});
+
+// 8. Phase 2: Autonomous Multi-Agent Swarm Adjudication
+const swarmReviewsTotal = new client.Counter({
+  name: "cts_swarm_reviews_total",
+  help: "Total instruments audited by the autonomous 4-agent swarm adjudication engine",
+  labelNames: ["verdict", "risk_band"], // CLEAR_STP, MANUAL_REVIEW_RECOMMENDED, REJECT_FLAG
+  registers: [register],
+});
+
+const swarmStpClearedTotal = new client.Counter({
+  name: "cts_swarm_stp_cleared_total",
+  help: "Total cheques straight-through-processed (STP) with high agent consensus",
+  labelNames: ["agent_consensus"], // UNANIMOUS, MAJORITY, SPLIT
+  registers: [register],
+});
+
+// 9. Phase 3: NIST FIPS 204 Post-Quantum Cryptography (PQC)
+const pqcSignaturesVerifiedTotal = new client.Counter({
+  name: "cts_pqc_signatures_verified_total",
+  help: "Total quantum-resistant ML-DSA / Dilithium signatures verified on clearing manifests",
+  labelNames: ["algorithm", "status"], // ML-DSA-87, FALCON-512, SPHINCS+
+  registers: [register],
+});
+
+const pqcKeyExchangesTotal = new client.Counter({
+  name: "cts_pqc_key_exchanges_total",
+  help: "Total ML-KEM Kyber-1024 quantum-safe encapsulated session exchanges",
+  labelNames: ["status"],
+  registers: [register],
+});
+
+// 10. Option 1: Zero-Knowledge Confidential Clearing (zk-CTS)
+const zkpProofsVerifiedTotal = new client.Counter({
+  name: "cts_zkp_proofs_verified_total",
+  help: "Total zk-SNARK Groth16 / BN254 zero-knowledge solvency proofs verified",
+  labelNames: ["circuit", "result"], // SolvencyAndSignatureCircuit, VALID, INVALID
+  registers: [register],
+});
+
+// 11. Option 2: Programmable Smart Cheques & CBDC (e-Rupee) Bridge
+const smartChequeContractsTotal = new client.Counter({
+  name: "cts_smart_cheque_contracts_total",
+  help: "Total programmable smart cheque escrow agreements created and executed",
+  labelNames: ["condition_type", "state"], // MILESTONE_ORACLE, TIME_LOCKED, RELEASED, REFUNDED
+  registers: [register],
+});
+
+const cbdcSettlementsTotal = new client.Counter({
+  name: "cts_cbdc_settlements_total",
+  help: "Total atomic DvP settlements finalized on RBI Digital Rupee (e₹) CBDC ledger",
+  labelNames: ["status", "denom"], // SUCCESS, FAILURE, eINR
+  registers: [register],
+});
+
+// 12. Option 3: Cross-Border Multi-Currency Clearing & Sanctions Radar
+const crossborderFxVolumeTotal = new client.Counter({
+  name: "cts_crossborder_fx_volume_usd_total",
+  help: "Cumulative cross-border international draft clearing volume converted to USD",
+  labelNames: ["source_currency", "target_currency"],
+  registers: [register],
+});
+
+const sanctionsScreenedTotal = new client.Counter({
+  name: "cts_sanctions_screened_total",
+  help: "Total international clearing transactions screened against OFAC / UN / RBI Sanctions list",
+  labelNames: ["verdict"], // PASS, BLOCKED, REVIEW
+  registers: [register],
+});
+
 module.exports = {
   register,
   getPrometheusMetrics,
@@ -201,4 +284,16 @@ module.exports = {
   itChaosEventsTotal,
   disputesFiledTotal,
   pkiSignaturesVerifiedTotal,
+  // Advanced Fintech Engine Metrics
+  lsmCyclesResolvedTotal,
+  lsmLiquidityUnlockedInrTotal,
+  swarmReviewsTotal,
+  swarmStpClearedTotal,
+  pqcSignaturesVerifiedTotal,
+  pqcKeyExchangesTotal,
+  zkpProofsVerifiedTotal,
+  smartChequeContractsTotal,
+  cbdcSettlementsTotal,
+  crossborderFxVolumeTotal,
+  sanctionsScreenedTotal,
 };

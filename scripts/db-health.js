@@ -35,20 +35,28 @@ async function main() {
     console.log(`[STORAGE]  Database Size: ${(Number(dbInfo.db_bytes) / 1024 / 1024).toFixed(2)} MB`);
     console.log(`[ENGINE]   PostgreSQL: ${dbInfo.pg_version.split(",")[0]}`);
 
-    const [cheques, banks, batches, telemetry] = await Promise.all([
+    const [cheques, banks, users, pps, fraud, batches, clearingEvents, telemetry] = await Promise.all([
       prisma.cheque.count(),
       prisma.bank.count(),
+      prisma.user.count(),
+      prisma.positivePayRecord.count(),
+      prisma.fraudFlag.count(),
       prisma.batch.count(),
+      prisma.clearingEvent.count(),
       prisma.telemetryEvent.count(),
     ]);
 
     console.log("\n[TABLE RECORD COUNTS]");
-    console.log(`- Banks:             ${banks}`);
-    console.log(`- Cheques:           ${cheques}`);
-    console.log(`- Clearing Batches:  ${batches}`);
-    console.log(`- Telemetry Events:  ${telemetry}`);
+    console.log(`- Participating Banks:     ${banks}`);
+    console.log(`- Enterprise Users:        ${users}`);
+    console.log(`- Cheques in System:       ${cheques}`);
+    console.log(`- Positive Pay Records:    ${pps}`);
+    console.log(`- Fraud & Forensic Flags:  ${fraud}`);
+    console.log(`- Clearing Batches:        ${batches}`);
+    console.log(`- Clearing Audit Events:   ${clearingEvents}`);
+    console.log(`- Telemetry SRE Events:    ${telemetry}`);
 
-    console.log("\n>>> Health check PASSED with 0 errors.");
+    console.log("\n>>> PostgreSQL CTS Health check PASSED with 0 errors.");
     process.exit(0);
   } catch (err) {
     console.error("\n>>> Health check FAILED:", err.message);

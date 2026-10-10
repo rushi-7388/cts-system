@@ -2,6 +2,7 @@ const prisma = require("../config/prisma");
 const crypto = require("crypto");
 const { broadcastEvent } = require("../utils/sse.util");
 const liquidityService = require("./liquidity.service");
+const { swarmReviewsTotal, swarmStpClearedTotal } = require("../utils/metrics.util");
 
 /**
  * Autonomous Multi-Agent Swarm Adjudication & Forensic Docket Engine
@@ -425,6 +426,13 @@ async function evaluateChequeWithSwarm(chequeId, overrideChequeData = null) {
       timestamp: new Date().toISOString(),
     });
   }
+  try {
+    const riskBand = consensus.consensusScore >= 95 ? "LOW" : consensus.consensusScore >= 80 ? "MEDIUM" : "HIGH";
+    swarmReviewsTotal.inc({ verdict: consensus.recommendation, risk_band: riskBand });
+    if (consensus.autoCleared) {
+      swarmStpClearedTotal.inc({ agent_consensus: "UNANIMOUS" });
+    }
+  } catch (err) {}
 
   return docket;
 }

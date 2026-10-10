@@ -154,3 +154,38 @@ $RECYCLE.BIN/
 # ------------------------------------------------------------------------------
 docker-compose.override.yml
 *.local.yml
+
+# ------------------------------------------------------------------------------
+# 12. Cryptographic Key Materials, Certs & HSM Emulators
+# ------------------------------------------------------------------------------
+*.pem
+*.key
+*.priv
+*.pfx
+*.p12
+*.cer
+*.crt
+*.der
+!backend/prisma/seed-certs/**
+hsm_storage/
+ceremony_vault/
+m-of-n-shards/
+
+# ------------------------------------------------------------------------------
+# 13. Zero-Knowledge Proof (ZKP) Circuits & Prover Artifacts
+# ------------------------------------------------------------------------------
+*.zkey
+*.ptau
+*.wtns
+*.r1cs
+circuits/build/
+
+# ------------------------------------------------------------------------------
+# 14. Performance Profiles, Heap Dumps & Scratch
+# ------------------------------------------------------------------------------
+*.heapsnapshot
+*.cpuprofile
+core
+core.*
+scratch/
+

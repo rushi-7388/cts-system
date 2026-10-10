@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { broadcastEvent } = require("../utils/sse.util");
+const { pqcSignaturesVerifiedTotal, pqcKeyExchangesTotal } = require("../utils/metrics.util");
 
 /**
  * Enterprise Post-Quantum Cryptography (PQC) Service
@@ -195,7 +196,7 @@ function verifyBatchHybrid(batchId, batchManifest, bankCode = "SRT") {
   const classicalMatch = signatureRecord.classicalSignature.digest === currentSha256 || signatureRecord.classicalSignature.verified;
   const pqcMatch = signatureRecord.postQuantumSignature.verified;
 
-  return {
+  const result = {
     batchId,
     verified: classicalMatch && pqcMatch,
     classicalValid: classicalMatch,
@@ -204,6 +205,12 @@ function verifyBatchHybrid(batchId, batchManifest, bankCode = "SRT") {
     tamperDetected: !classicalMatch || !pqcMatch,
     timestamp: new Date().toISOString(),
   };
+
+  try {
+    pqcSignaturesVerifiedTotal.inc({ algorithm: "ML-DSA-65", status: result.verified ? "VALID" : "TAMPERED" });
+  } catch (err) {}
+
+  return result;
 }
 
 /**
@@ -215,6 +222,10 @@ function encapsulateInterbankTunnel(sourceBankCode = "SRT", recipientBankCode = 
 
   // Ciphertext encapsulation over ring R_q
   const ciphertextHex = `01${crypto.createHash("sha3-512").update(sharedSecretHex + sourceBankCode + recipientBankCode).digest("hex")}${crypto.randomBytes(48).toString("hex")}`;
+
+  try {
+    pqcKeyExchangesTotal.inc({ status: "SUCCESS" });
+  } catch (err) {}
 
   return {
     protocol: "NIST FIPS 203 (ML-KEM-768 / CRYSTALS-Kyber)",

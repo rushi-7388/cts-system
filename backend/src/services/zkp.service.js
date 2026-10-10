@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { broadcastEvent } = require("../utils/sse.util");
+const { zkpProofsVerifiedTotal } = require("../utils/metrics.util");
 
 /**
  * Zero-Knowledge Confidential Clearing Service (zk-CTS)
@@ -136,7 +137,7 @@ function verifySolvencyProof(proofPackage) {
   const endTimeNs = process.hrtime.bigint();
   const verificationTimeMs = Number(endTimeNs - startTimeNs) / 1000000;
 
-  return {
+  const result = {
     verified: isValid,
     proofId: proofPackage.proofId,
     verificationTimeMs: Number((verificationTimeMs + 0.8).toFixed(2)), // Typically sub-2ms
@@ -149,6 +150,12 @@ function verifySolvencyProof(proofPackage) {
     complianceCertification: "Reserve Bank of India / NPCI Confidential Clearing Framework (Sec 29A)",
     verifiedAt: new Date().toISOString(),
   };
+
+  try {
+    zkpProofsVerifiedTotal.inc({ circuit: "SolvencyAndSignatureCircuit", result: isValid ? "VALID" : "INVALID" });
+  } catch (err) {}
+
+  return result;
 }
 
 function getCachedProof(chequeId) {

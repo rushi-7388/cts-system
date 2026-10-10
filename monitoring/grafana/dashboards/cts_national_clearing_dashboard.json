@@ -205,6 +205,187 @@
           "unit": "s"
         }
       }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 },
+      "id": 103,
+      "title": "Next-Gen Fintech Pillars: Tarjan LSM Gridlock Solver & Swarm STP",
+      "type": "row"
+    },
+    {
+      "id": 9,
+      "title": "Tarjan LSM Gridlock Cycles Cleared",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 23 },
+      "targets": [
+        {
+          "expr": "sum(cts_lsm_gridlock_cycles_resolved_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "SCC Cycles Resolved"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "emerald", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "LSM Liquidity Unlocked (₹ INR)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 23 },
+      "targets": [
+        {
+          "expr": "sum(cts_lsm_liquidity_unlocked_inr_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "Liquidity Saved"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "purple", "value": null },
+              { "color": "green", "value": 1000000 }
+            ]
+          },
+          "unit": "currencyINR"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "title": "Autonomous Swarm Adjudication Verdicts",
+      "type": "barchart",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 23 },
+      "targets": [
+        {
+          "expr": "sum(cts_swarm_reviews_total) by (verdict)",
+          "refId": "A",
+          "legendFormat": "{{verdict}}"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "NIST FIPS 204 Quantum-Safe Signatures (ML-DSA / Dilithium)",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 6, "x": 0, "y": 27 },
+      "targets": [
+        {
+          "expr": "sum(cts_pqc_signatures_verified_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "PQC Signatures"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "ML-KEM-768 Quantum Key Encapsulations",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 6, "x": 6, "y": 27 },
+      "targets": [
+        {
+          "expr": "sum(cts_pqc_key_exchanges_total) or vector(0)",
+          "refId": "A",
+          "legendFormat": "KEM Tunnels"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "cyan", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 30 },
+      "id": 104,
+      "title": "Zero-Knowledge Prover, CBDC e-Rupee & Cross-Border Sanctions Radar",
+      "type": "row"
+    },
+    {
+      "id": 14,
+      "title": "zk-SNARK Groth16 / BN254 Confidential Solvency Proofs",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 31 },
+      "targets": [
+        {
+          "expr": "sum(cts_zkp_proofs_verified_total) by (result)",
+          "refId": "A",
+          "legendFormat": "zk-CTS Proofs: {{result}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "purple", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Programmable Smart Cheques & CBDC (e₹) Settlements",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 10, "x": 6, "y": 31 },
+      "targets": [
+        {
+          "expr": "sum(rate(cts_smart_cheque_contracts_total[1m])) or vector(0)",
+          "refId": "A",
+          "legendFormat": "Escrow Contracts / sec"
+        },
+        {
+          "expr": "sum(rate(cts_cbdc_settlements_total[1m])) or vector(0)",
+          "refId": "B",
+          "legendFormat": "CBDC e-Rupee Finality / sec"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Cross-Border Sanctions Screening & OFAC Compliance",
+      "type": "barchart",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 31 },
+      "targets": [
+        {
+          "expr": "sum(cts_sanctions_screened_total) by (verdict)",
+          "refId": "A",
+          "legendFormat": "Watchlist Scan: {{verdict}}"
+        }
+      ]
     }
   ],
   "refresh": "5s",

@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { broadcastEvent } = require("../utils/sse.util");
+const { smartChequeContractsTotal, cbdcSettlementsTotal } = require("../utils/metrics.util");
 
 /**
  * Programmable "Smart Cheque" & Central Bank Digital Currency (CBDC e-Rupee) Service
@@ -99,6 +100,11 @@ function createSmartContract(chequeId, options = {}) {
   };
 
   smartContractRegistry.set(chequeId, contract);
+
+  try {
+    smartChequeContractsTotal.inc({ condition_type: "MILESTONE_ORACLE", state: contract.programmableState });
+  } catch (err) {}
+
   return contract;
 }
 
@@ -163,6 +169,10 @@ function settleWithCbdc(chequeId, amount, walletId = "WLT-RBI-eINR-992144") {
   if (lien) {
     lien.status = "SETTLED_CBDC";
   }
+
+  try {
+    cbdcSettlementsTotal.inc({ status: "SUCCESS", denom: "eINR" });
+  } catch (err) {}
 
   broadcastEvent("CBDC_SETTLEMENT_EXECUTED", {
     receipt: settlementReceipt,

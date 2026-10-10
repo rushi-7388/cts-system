@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { broadcastEvent } = require("../utils/sse.util");
+const { crossborderFxVolumeTotal, sanctionsScreenedTotal } = require("../utils/metrics.util");
 
 /**
  * Cross-Border Multi-Currency CTS & Real-Time Sanctions Screening Service
@@ -47,6 +48,13 @@ function convertCurrency(foreignAmount, foreignCurrency = "USD") {
     quoteValidForSeconds: 300,
     timestamp: new Date().toISOString(),
   };
+
+  try {
+    const usdEquiv = foreignCurrency === "USD" ? numericAmount : Number((inrGross / (FX_RATES.USD.rate || 84.12)).toFixed(2));
+    crossborderFxVolumeTotal.inc({ source_currency: foreignCurrency, target_currency: "INR" }, usdEquiv);
+  } catch (err) {}
+
+  return result;
 }
 
 /**
@@ -102,6 +110,12 @@ function screenSanctions({ drawerName = "", payeeName = "", countryOrigin = "IN"
     ],
     timestamp: new Date().toISOString(),
   };
+
+  try {
+    sanctionsScreenedTotal.inc({ verdict: result.status });
+  } catch (err) {}
+
+  return result;
 }
 
 /**

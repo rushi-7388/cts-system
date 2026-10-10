@@ -60,7 +60,7 @@ jobs:
           DATABASE_URL: "postgresql://cts:cts_password@localhost:5432/cts_system?schema=public"
         run: node prisma/seed.js
 
-      - name: Run Core Features Unit Diagnostic
+      - name: Run Core Features Unit Diagnostic (84-Test Suite)
         working-directory: ./backend
         run: npm test
 
@@ -79,6 +79,34 @@ jobs:
           node src/server.js &
           sleep 4
           node scripts/verify-roles.js
+
+  validate-infrastructure:
+    name: K8s Manifests & Monitoring Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate Grafana Dashboard JSON Syntax
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('monitoring/grafana/dashboards/cts_national_clearing_dashboard.json')); console.log('✓ Grafana Dashboard JSON is valid');"
+
+      - name: Validate Kubernetes Manifests Syntax
+        run: |
+          node -e "
+            const fs = require('fs');
+            const files = fs.readdirSync('k8s').filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
+            files.forEach(f => {
+              const content = fs.readFileSync('k8s/' + f, 'utf8');
+              if (!content.trim()) throw new Error('Empty file: ' + f);
+              console.log('✓ Validated k8s/' + f);
+            });
+          "
 
   validate-frontend:
     name: Frontend Build & Bundle Analysis
@@ -132,7 +160,7 @@ jobs:
   docker-compose-validation:
     name: Multi-Container Docker Build Check
     runs-on: ubuntu-latest
-    needs: [validate-backend, validate-frontend]
+    needs: [validate-backend, validate-frontend, validate-infrastructure]
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4

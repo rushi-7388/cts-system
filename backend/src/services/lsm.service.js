@@ -1,6 +1,7 @@
 const prisma = require("../config/prisma");
 const crypto = require("crypto");
 const { broadcastEvent } = require("../utils/sse.util");
+const { lsmCyclesResolvedTotal, lsmLiquidityUnlockedInrTotal } = require("../utils/metrics.util");
 
 /**
  * Enterprise Interbank Liquidity Gridlock Resolution Engine (LSM)
@@ -404,6 +405,14 @@ async function resolveGridlock(options = {}) {
   // Track daemon stats
   daemonConfig.cyclesResolvedTotal += detectedCycles.length;
   daemonConfig.capitalConservedTotal += totalNettedVolume;
+  try {
+    if (detectedCycles.length > 0) {
+      lsmCyclesResolvedTotal.inc({ algorithm: "tarjan_scc" }, detectedCycles.length);
+    }
+    if (totalNettedVolume > 0) {
+      lsmLiquidityUnlockedInrTotal.inc({ batch_type: "multilateral_lsm" }, totalNettedVolume);
+    }
+  } catch (err) {}
 
   const receipt = {
     resolutionId: `LSM-${Date.now()}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`,
